@@ -1,6 +1,12 @@
 package br.upe.persistence;
 
-public class User {
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.security.SecureRandom;
+
+public class User implements Persistence {
     private int id;
     private String name;
     private String email;
@@ -29,19 +35,46 @@ public class User {
         this.email = email;
     }
 
-    public void create() {
-
+    @Override
+    public void create(Object... params) {
+        SecureRandom secureRandom = new SecureRandom();
+        if (params.length < 2) {
+            //erro
+        }
+        this.email = (String) params[0];
+        this.name = (String) params[1];
+        //verificar se o id não existe
+        this.id = 100_000_000 + secureRandom.nextInt(900_000_000);
+        String line = id + ", " + email + ", " + name;
+         try {
+            File f = new File("./db/users.txt");
+            if (!f.getParentFile().exists()) {
+                f.getParentFile().mkdirs();
+            }
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.txt"))) {
+                writer.write(line);
+            }
+            System.out.println("\nUsuário Criado!\n");
+        } catch (IOException writerEx) {
+            System.out.println("Error occurred while writing:");
+        }
     }
 
+    @Override
     public void update() {
 
     }
 
+    @Override
     public void delete() {
 
     }
 
+    @Override
     public void read() {
 
     }
+
+
+
 }
