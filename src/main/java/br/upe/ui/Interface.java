@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class Interface {
     public static void main(String[] args) {
         System.out.println("Bem-Vindo ao Even4");
-        int option = -1; // Inicialize com um valor inválido para entrar no loop
+        int option = -1;
 
         try (Scanner sc = new Scanner(System.in)) {
             do {
@@ -20,10 +20,10 @@ public class Interface {
                 System.out.print("Escolha uma opção: ");
                 if (sc.hasNextInt()) {
                     option = sc.nextInt();
-                    sc.nextLine(); // Consumir a nova linha pendente
+                    sc.nextLine();
                 } else {
                     System.out.println("Entrada inválida. Por favor, insira um número.");
-                    sc.nextLine(); // Limpar a entrada inválida
+                    sc.nextLine();
                     continue;
                 }
 
@@ -48,8 +48,16 @@ public class Interface {
         System.out.println("Digite seu email:");
         if (sc.hasNextLine()) {
             String email = sc.nextLine();
-            // validar email
-            System.out.println("Login com email: " + email);
+            System.out.println("Digite seu cpf");
+            String cpf = sc.nextLine();
+            Controller userController = new UserController();
+            if(userController.loginValidate(email, cpf)) {
+                System.out.println("Login Realizado com Sucesso");
+
+            } else {
+                System.out.println("Login ou senha incorreto");
+            }
+
         } else {
             System.out.println("Erro ao ler email.");
         }
@@ -59,11 +67,11 @@ public class Interface {
         System.out.println("Cadastre seu email:");
         if (sc.hasNextLine()) {
             String email = sc.nextLine();
-            System.out.println("Digite seu nome:");
+            System.out.println("Digite seu cpf:");
             if (sc.hasNextLine()) {
-                String name = sc.nextLine();
+                String cpf = sc.nextLine();
                 Controller userController = new UserController();
-                userController.create(email, name);
+                userController.create(email, cpf);
             } else {
                 System.out.println("Erro ao ler nome.");
             }

@@ -1,8 +1,10 @@
 package br.upe.controller;
 
 public interface Controller {
-    public void create(Object... params);
-    public void delete();
-    public void update();
-    public void read();
+    void create(Object... params);
+    void delete();
+    void update();
+    void read();
+
+    boolean loginValidate(String email, String cpf);
 }

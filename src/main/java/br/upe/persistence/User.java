@@ -1,54 +1,40 @@
 package br.upe.persistence;
 
+import br.upe.controller.Controller;
+import br.upe.controller.UserController;
+
 import java.io.*;
-import java.net.UnknownServiceException;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class User implements Persistence {
     private String id;
-    private String name;
+    private String cpf;
     private String email;
-    private String password;
-    private HashMap<String, User> userHashMap;
-
-    public User (String name, String email, String password) {
-        this.setName(name);
-        this.setEmail(email);
-        this.setPassword(password);
-    }
 
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
-        try {
-            for (Map.Entry<String, User> entry : this.userHashMap.entrySet()) {
-                User user = entry.getValue();
-                if (user.getId().equals(id)) {  // Exemplo de condição
-
-                }
-            }
-            this.email = email;
-
-        } catch (IOException exception) {
-            System.out.println("Erro ocorreu while writing:");
-            exception.printStackTrace();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.id = id;
     }
 
-    public String getName() {
-        return name;
+    private String generateId() {
+        SecureRandom secureRandom = new SecureRandom();
+        long timestamp = Instant.now().toEpochMilli();
+        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000); // Get the last 3 digits
+        int randomValue = secureRandom.nextInt(900) + 100; // 3-digit random number
+        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue); // Format to ensure 6 digits
     }
 
-    public void setName(String name) {
+    public String getCpf() {
+        return this.cpf;
+    }
 
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getEmail() {
@@ -56,44 +42,11 @@ public class User implements Persistence {
     }
 
     public void setEmail(String email) {
-        try {
-            HashMap<String, User> userHashMap = this.read();
-
-            for (Map.Entry<String, User> entry : userHashMap.entrySet()) {
-                User user = entry.getValue();
-                if (user.getEmail().equals(email)) {  // Exemplo de condição
-                    throw new Exception("Email awlready signed");
-                }
-            }
-            this.email = email;
-
-        } catch (IOException exception) {
-            System.out.println("Erro ocorreu while writing:");
-            exception.printStackTrace();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public HashMap<String, User> getUserHashMap() {
-        return userHashMap;
-    }
-
-    public void setUserHashMap(HashMap<String, User> userHashMap) {
-        this.userHashMap = userHashMap;
-    }
-
-    @Override
     public void create(Object... params) {
-        SecureRandom secureRandom = new SecureRandom();
+
         if (params.length < 2) {
             // erro
             System.out.println("Erro: Parâmetros insuficientes.");
@@ -101,10 +54,10 @@ public class User implements Persistence {
         }
 
         this.email = (String) params[0];
-        this.name = (String) params[1];
-        // verificar se o id não existe
-        this.id = Integer.toString(100_000_000 + secureRandom.nextInt(900_000_000));
-        String line = id + ";" + email + ";" + name;
+        this.cpf = (String) params[1];
+        //timestamp
+        this.id = generateId();
+        String line = id + ";" + email + ";" + cpf;
 
         try {
             File f = new File("./db/users.csv");
@@ -136,21 +89,24 @@ public class User implements Persistence {
     }
 
     @Override
-    public void read() {
+    public HashMap<String, User> read() {
         HashMap<String, User> list = new HashMap<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./db/users.csv"));
             String line;
 
             while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
+                String[] parts = line.split(";");
                 if (parts.length == 3) {
                     String id = parts[0].trim();
                     String email = parts[1].trim();
-                    String name = parts[2].trim();
+                    String cpf = parts[2].trim();
 
-                    User user = new User(id, email, name);
-                    list.put(id, user);
+                    User user = new User();
+                    user.setEmail(email);
+                    user.setCpf(cpf);
+                    user.setId(id);
+                    list.put(user.getId(), user);
                 }
             }
             reader.close();
@@ -160,9 +116,7 @@ public class User implements Persistence {
             readerEx.printStackTrace();
         }
 
-        this.userHashMap = list;
+        return list;
     }
-
-
 
 }

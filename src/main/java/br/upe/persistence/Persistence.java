@@ -3,8 +3,8 @@ package br.upe.persistence;
 import java.util.HashMap;
 
 public interface  Persistence {
-    public void create(Object... params);
-    public void delete();
-    public void update();
-    public void read();
+    void create(Object... params);
+    void delete();
+    void update();
+    HashMap<String, User> read();
 }

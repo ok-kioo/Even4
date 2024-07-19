@@ -8,6 +8,15 @@ public class Event {
     private LocalDate date;
     private String description;
     private String location;
+    private String idOwner;
+
+    public String getIdOwner() {
+        return idOwner;
+    }
+
+    public void setIdOwner(String idOwner) {
+        this.idOwner = idOwner;
+    }
 
     public int getId() {
 
