@@ -7,6 +7,7 @@ import java.io.*;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Map;
 
 public class User implements Persistence {
     private String id;
@@ -24,9 +25,9 @@ public class User implements Persistence {
     private String generateId() {
         SecureRandom secureRandom = new SecureRandom();
         long timestamp = Instant.now().toEpochMilli();
-        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000); // Get the last 3 digits
-        int randomValue = secureRandom.nextInt(900) + 100; // 3-digit random number
-        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue); // Format to ensure 6 digits
+        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000);
+        int randomValue = secureRandom.nextInt(900) + 100;
+        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue);
     }
 
     public String getCpf() {
@@ -55,7 +56,6 @@ public class User implements Persistence {
 
         this.email = (String) params[0];
         this.cpf = (String) params[1];
-        //timestamp
         this.id = generateId();
         String line = id + ";" + email + ";" + cpf;
 
@@ -67,10 +67,10 @@ public class User implements Persistence {
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv", true))) {
                 writer.write(line);
-                writer.newLine(); // Adiciona uma nova linha após escrever os dados
+                writer.newLine();
             }
 
-            System.out.println("\nUsuário Criado!\n");
+            System.out.println("User Created\n");
         } catch (IOException writerEx) {
             System.out.println("Error ocurred while writing:");
             writerEx.printStackTrace();
@@ -79,13 +79,47 @@ public class User implements Persistence {
 
 
     @Override
-    public void update() {
+    public void update(Object... params) {
+        if (params.length > 1) {
+            System.out.println("Só pode ter 1 parametro");
+        }
 
+        HashMap<String, User> userHashMap = (HashMap<String, User>) params[0];
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv"))) {
+            for (Map.Entry<String, User> entry : userHashMap.entrySet()) {
+                User user = entry.getValue();
+                String line = user.getId() + ";" + user.getEmail() + ";" + user.getCpf() + "\n";
+                writer.write(line);
+            }
+            writer.close();
+            System.out.println("User Updated\n");
+        } catch (IOException writerEx) {
+            System.out.println("Error occurred while writing:");
+            writerEx.printStackTrace();
+        }
     }
 
     @Override
-    public void delete() {
+    public void delete(Object... params) {
+        if (params.length > 1) {
+            System.out.println("Só pode ter 1 parametro");
+        }
 
+        HashMap<String, User> userHashMap = (HashMap<String, User>) params[0];
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv"))) {
+            for (Map.Entry<String, User> entry : userHashMap.entrySet()) {
+                User user = entry.getValue();
+                String line = user.getId() + ";" + user.getEmail() + ";" + user.getCpf() + "\n";
+                writer.write(line);
+            }
+            writer.close();
+            System.out.println("User Removed\n");
+        } catch (IOException writerEx) {
+            System.out.println("Error occurred while writing:");
+            writerEx.printStackTrace();
+        }
     }
 
     @Override
