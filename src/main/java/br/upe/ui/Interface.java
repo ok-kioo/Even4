@@ -66,23 +66,14 @@ public class Interface {
                                     case 2:
                                         break;
                                     case 3:
-                                        Controller sec = (Controller) new SubEventController();
-                                        System.out.println("Digite o nome do SubEvento: ");
-                                        String nameSubEvent = sc.nextLine();
-                                        System.out.println("Descrição do Evento: ");
-                                        String descriptionSubEvent = sc.nextLine();
-                                        System.out.println("Data do Evento: ");
-                                        String dateSubEvent = sc.nextLine();
-                                        System.out.println("Local do Evento: ");
-                                        String locationSubEvent = sc.nextLine();
-                                        sec.create(nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+
                                     case 5:
                                         boolean isRemoved = setup(sc, userLogin);
                                         if (isRemoved) {
                                             option = 0;
                                         }
                                         break;
-                                    case 0:
+                                    case 0 :
                                         System.out.println("Voltando...");
                                         break;
                                     default:
