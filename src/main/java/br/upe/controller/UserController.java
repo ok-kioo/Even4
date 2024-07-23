@@ -10,8 +10,7 @@ public class UserController implements Controller {
     private Persistence userLog;
 
     public UserController() {
-        Persistence userPersistence = new User();
-        this.userHashMap = userPersistence.read();
+        this.read();
     }
 
     public HashMap<String, Persistence> getUserHashMap() {
@@ -70,13 +69,6 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void deleteById(String id) {
-        Persistence userPersistence = new User();
-        userHashMap.remove(id);
-        userPersistence.delete(userHashMap);
-    }
-
-    @Override
     public void update(Object... params) {
         if (params.length < 2) {
             System.out.println("Só pode ter 2 parametros");
@@ -98,8 +90,20 @@ public class UserController implements Controller {
 
     @Override
     public void read() {
+        Persistence userPersistence = new User();
+        this.userHashMap = userPersistence.read();
+    }
+
+    @Override
+    public void delete(Object... params) {
 
     }
+
+    @Override
+    public void list(String idowner) {
+
+    }
+
 
     public boolean loginValidate(String email, String cpf) {
         for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {
