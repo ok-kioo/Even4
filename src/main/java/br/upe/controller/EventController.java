@@ -17,8 +17,7 @@ public class EventController implements Controller {
 
 
     public EventController() {
-        Persistence eventPersistence = (Persistence) new Event();
-        this.eventHashMap = eventPersistence.read();
+        this.read();
     }
 
 
@@ -47,8 +46,8 @@ public class EventController implements Controller {
 
     @Override
     public void read() {
-
-
+        Persistence eventPersistence = (Persistence) new Event();
+        this.eventHashMap = eventPersistence.read();
     }
 
 

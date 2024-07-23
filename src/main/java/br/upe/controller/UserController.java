@@ -10,8 +10,7 @@ public class UserController implements Controller {
     private Persistence userLog;
 
     public UserController() {
-        Persistence userPersistence = new User();
-        this.userHashMap = userPersistence.read();
+        this.read();
     }
 
     public HashMap<String, Persistence> getUserHashMap() {
@@ -98,7 +97,8 @@ public class UserController implements Controller {
 
     @Override
     public void read() {
-
+        Persistence userPersistence = new User();
+        this.userHashMap = userPersistence.read();
     }
 
     public boolean loginValidate(String email, String cpf) {
