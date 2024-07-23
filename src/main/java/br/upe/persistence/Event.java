@@ -121,8 +121,7 @@ public class Event implements Persistence {
         this.ownerId = (String) params[4];
 
         this.id = generateId();
-        String line = id + ";" + name + ";" + description + ";" + location + ";" + ownerId + "\n" +
-                "";
+        String line = id + ";" + name + ";" + description + ";" + location + ";" + ownerId + "\n";
 
         File f = new File("./db/events.csv");
         try {
@@ -131,9 +130,9 @@ public class Event implements Persistence {
                 writer.newLine();
             }
 
-            System.out.println("Event Created\n");
+            System.out.println("Evento Criado");
         } catch (IOException writerEx) {
-            System.out.println("Error occurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -170,7 +169,7 @@ public class Event implements Persistence {
             reader.close();
 
         } catch (IOException readerEx) {
-            System.out.println("Error occurred while reading:");
+            System.out.println("Erro ao ler o arquivo");
             readerEx.printStackTrace();
         }
 
