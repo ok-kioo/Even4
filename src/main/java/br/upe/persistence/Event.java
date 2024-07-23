@@ -3,8 +3,7 @@ import java.io.*;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.HashMap;
-
-
+import java.util.Map;
 
 
 public class Event implements Persistence {
@@ -34,10 +33,12 @@ public class Event implements Persistence {
     }
 
     public String  getDate() {
+
         return date;
     }
 
     public String getDescription() {
+
         return description;
     }
 
@@ -71,40 +72,40 @@ public class Event implements Persistence {
         this.location = location;
     }
 
-    private String generateId() {
-        SecureRandom secureRandom = new SecureRandom();
-        long timestamp = Instant.now().toEpochMilli();
-        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000);
-        int randomValue = secureRandom.nextInt(900) + 100;
-        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue);
-    }
-
-    public void updateEvent() {
-
-    }
-
-    public void deleteEvent() {
-
-    }
-
-    @Override
-    public void delete(Object... params) {
-
-    }
-
-    @Override
-    public void update(Object... params) {
-
-    }
-
     @Override
     public String getData(String dataToGet) {
-        return "";
+        String data = "";
+        try {
+            switch (dataToGet) {
+                case "id" -> data = this.getId();
+                case "name" -> data = this.getName();
+                case "date" -> data = this.getDate();
+                case "description" -> data = this.getDescription();
+                case "location" -> data = this.getLocation();
+                case "ownerId" -> data = this.getIdOwner();
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Informação não existe ou é restrita");
+        }
+        return data;
     }
 
     @Override
-    public void setData(String dataToSet, String data) {
-
+    public void setData(String dataToSet, String data){
+        try {
+            switch (dataToSet) {
+                case "id" -> this.setId(data);
+                case "name" -> this.setName(data);
+                case "description" -> this.setDescription(data);
+                case "date" -> this.setDate(data);
+                case "location" -> this.setLocation(data);
+                case "ownerId" -> this.setIdOwner(data);
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Informação não existe ou é restrita");
+        }
     }
 
     @Override
@@ -121,7 +122,7 @@ public class Event implements Persistence {
         this.ownerId = (String) params[4];
 
         this.id = generateId();
-        String line = id + ";" + name + ";" + description + ";" + location + ";" + ownerId + "\n";
+        String line = id + ";" + name + ";" + date + ";" + description + ";" + location + ";" + ownerId + "\n";
 
         File f = new File("./db/events.csv");
         try {
@@ -130,9 +131,9 @@ public class Event implements Persistence {
                 writer.newLine();
             }
 
-            System.out.println("Evento Criado");
+            System.out.println("Evento Criado\n");
         } catch (IOException writerEx) {
-            System.out.println("Erro na escrita do arquivo");
+            System.out.println("Um erro ocorreu:");
             writerEx.printStackTrace();
         }
     }
@@ -169,11 +170,64 @@ public class Event implements Persistence {
             reader.close();
 
         } catch (IOException readerEx) {
-            System.out.println("Erro ao ler o arquivo");
+            System.out.println("Error occurred while reading:");
             readerEx.printStackTrace();
         }
-
         return list;
+    }
+
+    @Override
+    public void update(Object... params) {
+        if (params.length > 1) {
+            System.out.println("Só pode ter 1 parametro");
+        }
+
+        HashMap<String, Persistence> userHashMap = (HashMap<String, Persistence>) params[0];
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/events.csv"))) {
+            for (Map.Entry<String, Persistence> entry : userHashMap.entrySet()) {
+                Persistence event = entry.getValue();
+                String line = event.getData("id") + ";" + event.getData("name") + ";" + event.getData("date")
+                        + ";" + event.getData("description")
+                        + ";" + event.getData("location") + ";" + event.getData("ownerId") + "\n";
+                writer.write(line);
+            }
+            writer.close();
+            System.out.println("Evento Atualizado");
+        } catch (IOException writerEx) {
+            System.out.println("Error occurred while writing:");
+            writerEx.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(Object... params) {
+        if (params.length > 1) {
+            System.out.println("Só pode ter 1 parametro");
+        }
+        HashMap<String, Persistence> eventHashMap = (HashMap<String, Persistence>) params[0];
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/events.csv"))) {
+            for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
+                Persistence event = entry.getValue();
+                String line = event.getData("id") + ";" + event.getData("name") + ";" + event.getData("date")
+                        + ";" + event.getData("description")
+                        + ";" + event.getData("location") + ";" + event.getData("ownerId") + "\n";
+                writer.write(line);
+            }
+            writer.close();
+            System.out.println("Event Removed\n");
+        } catch (IOException writerEx) {
+            System.out.println("Error occurred while writing:");
+            writerEx.printStackTrace();
+        }
+    }
+
+    private String generateId() {
+        SecureRandom secureRandom = new SecureRandom();
+        long timestamp = Instant.now().toEpochMilli();
+        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000);
+        int randomValue = secureRandom.nextInt(900) + 100;
+        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue);
     }
 
 }

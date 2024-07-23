@@ -2,13 +2,17 @@ package br.upe.controller;
 
 import br.upe.persistence.User;
 
+import java.io.FileNotFoundException;
+
 public interface Controller {
-    void create(Object... params);
-    void deleteById(String id);
+    void create(Object... params) throws FileNotFoundException;
     void update(Object... params);
     void read();
+    void delete(Object... params);
+    void list(String idowner);
 
     boolean loginValidate(String email, String cpf);
     String getData(String dataToGet);
+
 
 }

@@ -4,10 +4,11 @@ import br.upe.controller.Controller;
 import br.upe.controller.EventController;
 import br.upe.controller.SubEventController;
 import br.upe.controller.UserController;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Interface {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         System.out.println("Bem-Vindo ao Even4");
         int option = -1;
         try (Scanner sc = new Scanner(System.in)) {
@@ -33,10 +34,12 @@ public class Interface {
                         if(isLog) {
                             do {
                                 System.out.println("[1] - Criar Evento");
-                                System.out.println("[2] - Entrar em um Evento");
-                                System.out.println("[3] - Criar SubEvento");
-                                System.out.println("[4] - Criar Sessão");
-                                System.out.println("[5] - Perfil");
+                                System.out.println("[2] - Alterar Evento");
+                                System.out.println("[3] - Entrar em um Evento");
+                                System.out.println("[4] - Criar SubEvento");
+                                System.out.println("[5] - Alterar SubEvento");
+                                System.out.println("[6] - Criar Sessão");
+                                System.out.println("[7] - Perfil");
                                 System.out.println("[0] - Voltar");
                                 System.out.print("Escolha uma opção: ");
                                 if (sc.hasNextInt()) {
@@ -45,13 +48,14 @@ public class Interface {
                                 } else {
                                     System.out.println("Entrada inválida. Por favor, insira um número.");
                                     sc.nextLine();
+
                                 }
 
+                                Controller ec = new EventController();
+                                Controller sec = new SubEventController();
 
                                 switch (option) {
-
                                     case 1:
-                                        Controller ec = new EventController();
                                         System.out.println("Digite o nome do Evento: ");
                                         String nameEvent = sc.nextLine();
                                         System.out.println("Data do Evento: ");
@@ -64,20 +68,87 @@ public class Interface {
                                         break;
 
                                     case 2:
+                                        ec.list(userLogin.getData("id"));
+                                        System.out.println("Selecione um Evento: ");
+                                        String changed = sc.nextLine();
+                                        System.out.println("[1] - Apagar Evento ");
+                                        System.out.println("[2] - Alterar Evento ");
+                                        int optionEvent = -1;
+                                        if (sc.hasNextInt()) {
+                                            optionEvent = sc.nextInt();
+                                            sc.nextLine();
+                                        } else {
+                                            System.out.println("Entrada inválida. Por favor, insira um número.");
+                                            sc.nextLine();
+
+                                        }
+                                        switch (optionEvent) {
+                                            case 1:
+                                                ec.delete(changed, "name");
+                                                break;
+                                            case 2:
+                                                System.out.println("Digite o novo nome do Evento: ");
+                                                String newnameEvent = sc.nextLine();
+                                                System.out.println("Nova Data do Evento: ");
+                                                String newdateEvent = sc.nextLine();
+                                                System.out.println("Nova Descrição do Evento: ");
+                                                String newdescriptionEvent = sc.nextLine();
+                                                System.out.println("Novo Local do Evento: ");
+                                                String newlocationEvent = sc.nextLine();
+                                                ec.update(changed, newnameEvent, newdateEvent, newdescriptionEvent,
+                                                        newlocationEvent);
+                                                break;
+                                        }
                                         break;
-                                    case 3:
-                                        Controller sec = (Controller) new SubEventController();
+
+                                    case 4:
+                                        System.out.println("Nome do Evento Pai: ");
+                                        String fatherEvent = sc.nextLine();
                                         System.out.println("Digite o nome do SubEvento: ");
                                         String nameSubEvent = sc.nextLine();
-                                        System.out.println("Descrição do Evento: ");
-                                        String descriptionSubEvent = sc.nextLine();
-                                        System.out.println("Data do Evento: ");
+                                        System.out.println("Data do SubEvento: ");
                                         String dateSubEvent = sc.nextLine();
-                                        System.out.println("Local do Evento: ");
+                                        System.out.println("Descrição do SubEvento: ");
+                                        String descriptionSubEvent = sc.nextLine();
+                                        System.out.println("Local do SubEvento: ");
                                         String locationSubEvent = sc.nextLine();
-                                        sec.create(nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+                                        sec.create(fatherEvent, nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
                                         break;
+
                                     case 5:
+                                        sec.list(userLogin.getData("id"));
+                                        System.out.println("Selecione um SubEvento: ");
+                                        String subChanged = sc.nextLine();
+                                        System.out.println("[1] - Apagar SubEvento ");
+                                        System.out.println("[2] - Alterar SubEvento ");
+                                        int optionSubEvent = -1;
+                                        if (sc.hasNextInt()) {
+                                            optionSubEvent = sc.nextInt();
+                                            sc.nextLine();
+                                        } else {
+                                            System.out.println("Entrada inválida. Por favor, insira um número.");
+                                            sc.nextLine();
+
+                                        }
+                                        switch (optionSubEvent) {
+                                            case 1:
+                                                sec.delete(subChanged, "name");
+                                                break;
+                                            case 2:
+                                                System.out.println("Digite o novo nome do SubEvento: ");
+                                                String newnameEvent = sc.nextLine();
+                                                System.out.println("Nova Data do SubEvento: ");
+                                                String newdateEvent = sc.nextLine();
+                                                System.out.println("Nova Descrição do SubEvento: ");
+                                                String newdescriptionEvent = sc.nextLine();
+                                                System.out.println("Novo Local do SubEvento: ");
+                                                String newlocationEvent = sc.nextLine();
+                                                sec.update(subChanged, newnameEvent, newdateEvent, newdescriptionEvent,
+                                                        newlocationEvent);
+                                                break;
+                                        }
+                                        break;
+                                    case 7:
                                         boolean isRemoved = setup(sc, userLogin);
                                         if (isRemoved) {
                                             option = 0;
@@ -128,7 +199,7 @@ public class Interface {
         return new Object[] {isLog, userController};
     }
 
-    public static void signup(Scanner sc) {
+    public static void signup(Scanner sc) throws FileNotFoundException {
         Controller userController = new UserController();
         System.out.println("Cadastre seu email:");
         if (sc.hasNextLine()) {
@@ -214,7 +285,7 @@ public class Interface {
                     }
                     switch (option) {
                         case 1:
-                            userLogin.deleteById(userLogin.getData("id"));
+                            userLogin.delete(userLogin.getData("id"), "id");
                             option = 0;
                             isRemoved = true;
                             break;
