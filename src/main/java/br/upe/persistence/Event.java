@@ -107,4 +107,43 @@ public class Event implements Persistence {
 
     }
 
+    @Override
+    public  HashMap<String, Persistence> read() {
+        HashMap<String, Persistence> list = new HashMap<>();
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader("./db/events.csv"));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(";");
+                if (parts.length == 6) {
+                    String id = parts[0].trim();
+                    String name = parts[1].trim();
+                    String date = parts[2].trim();
+                    String description = parts[3].trim();
+                    String location = parts[4].trim();
+                    String ownerId = parts[5].trim();
+
+                    Event event = new Event();
+
+                    event.setId(id);
+                    event.setName(name);
+                    event.setDate(date);
+                    event.setDescription(description);
+                    event.setLocation(location);
+                    event.setIdOwner(ownerId);
+                    list.put(event.getId(), event);
+                }
+            }
+            reader.close();
+
+        } catch (IOException readerEx) {
+            System.out.println("Error occurred while reading:");
+            readerEx.printStackTrace();
+        }
+
+        return list;
+    }
+
 }
+
