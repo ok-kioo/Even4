@@ -51,7 +51,7 @@ public class SubEventController implements Controller {
                 throw new IllegalArgumentException("Data inválida: " + date);
             }
         } catch (IOException exception) {
-            System.out.println("Name already signed");
+            System.out.println("Nome em uso");
         }
     }
 

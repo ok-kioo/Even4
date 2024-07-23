@@ -30,7 +30,7 @@ public class SubEvent extends Event implements Persistence{
                 default -> throw new IOException();
             }
         } catch (IOException e) {
-            System.out.println("Data don't exist or is restrict");
+            System.out.println("Informação não existe ou é restrita");
         }
         return data;
     }
@@ -49,7 +49,7 @@ public class SubEvent extends Event implements Persistence{
                 default -> throw new IOException();
             }
         } catch (IOException e) {
-            System.out.println("Data don't exist or is restrict");
+            System.out.println("Informação não existe ou é restrita");
         }
     }
 
@@ -143,9 +143,9 @@ public class SubEvent extends Event implements Persistence{
                 writer.newLine();
             }
 
-            System.out.println("SubEvent Created\n");
+            System.out.println("SubEvento Criado");
         } catch (IOException writerEx) {
-            System.out.println("Error ocurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -181,7 +181,7 @@ public class SubEvent extends Event implements Persistence{
             reader.close();
 
         } catch (IOException readerEx) {
-            System.out.println("Error occurred while reading:");
+            System.out.println("Erro ao ler o arquivo");
             readerEx.printStackTrace();
         }
         return list;
@@ -201,9 +201,9 @@ public class SubEvent extends Event implements Persistence{
                 writer.write(line);
             }
             writer.close();
-            System.out.println("SubEvent Updated");
+            System.out.println("SubEvento Atualizado");
         } catch (IOException writerEx) {
-            System.out.println("Error occurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -222,9 +222,9 @@ public class SubEvent extends Event implements Persistence{
                 writer.write(line);
             }
             writer.close();
-            System.out.println("SubEvent Removed\n");
+            System.out.println("SubEvento Removido");
         } catch (IOException writerEx) {
-            System.out.println("Error occurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }

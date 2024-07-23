@@ -30,7 +30,7 @@ public class User implements Persistence {
                 default -> throw new IOException();
             }
         } catch (IOException e) {
-            System.out.println("Data don't exist or is restrict");
+            System.out.println("Informação não existe ou é restrita");
         }
         return data;
     }
@@ -45,7 +45,7 @@ public class User implements Persistence {
                 default -> throw new IOException();
             }
         } catch (IOException e) {
-            System.out.println("Data don't exist or is restrict");
+            System.out.println("Informação não existe ou é restrita");
         }
     }
 
@@ -92,9 +92,9 @@ public class User implements Persistence {
                 writer.newLine();
             }
 
-            System.out.println("User Created\n");
+            System.out.println("Usuário Criado");
         } catch (IOException writerEx) {
-            System.out.println("Error ocurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -115,9 +115,9 @@ public class User implements Persistence {
                 writer.write(line);
             }
             writer.close();
-            System.out.println("User Updated");
+            System.out.println("Usuário Atualizado");
         } catch (IOException writerEx) {
-            System.out.println("Error occurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -137,9 +137,9 @@ public class User implements Persistence {
                 writer.write(line);
             }
             writer.close();
-            System.out.println("User Removed\n");
+            System.out.println("Usuário Removido");
         } catch (IOException writerEx) {
-            System.out.println("Error occurred while writing:");
+            System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
@@ -168,7 +168,7 @@ public class User implements Persistence {
             reader.close();
 
         } catch (IOException readerEx) {
-            System.out.println("Error occurred while reading:");
+            System.out.println("Erro ao ler o arquivo");
             readerEx.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -35,7 +35,7 @@ public class UserController implements Controller {
                 default -> throw new IOException();
             }
         } catch (IOException e) {
-            System.out.println("Data don't exist or is restrict");
+            System.out.println("Informação não existe ou é restrita");
         }
         return data;
     }
@@ -64,7 +64,7 @@ public class UserController implements Controller {
             userPersistence.create(email, cpf);
 
         } catch (IOException exception) {
-            System.out.println("Email already signed");
+            System.out.println("Email já cadastrado");
         }
     }
 
