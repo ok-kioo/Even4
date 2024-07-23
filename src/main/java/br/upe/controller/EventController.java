@@ -27,35 +27,6 @@ public class EventController implements Controller {
     }
 
     @Override
-    public void create(Object... params) {
-        if (params.length != 5) {
-            System.out.println("Só pode ter 5 parametros");
-        }
-         String name = (String) params[0];
-         String date = (String) params[1];
-         String description = (String) params[2];
-         String location = (String) params[3];
-         String idOwner = (String) params[4];
-         Persistence event = (Persistence) new Event();
-
-        try {
-            for (Map.Entry<String, Persistence> entry : this.eventHashMap.entrySet()) {
-                Persistence eventindice = entry.getValue();
-                if (eventindice.getData("name").equals(name)) {
-                    throw new IOException();
-                }
-            }
-            if (isValidDate(date)){
-                event.create(name, date, description, location, idOwner);
-            } else {
-                throw new IllegalArgumentException("Data inválida: " + date);
-            }
-        } catch (IOException exception) {
-            System.out.println("Name already signed");
-        }
-    }
-
-    @Override
     public void deleteById(String id) {
 
     }
@@ -78,13 +49,6 @@ public class EventController implements Controller {
     @Override
     public String getData(String dataToGet) {
         return "";
-    }
-
-    private boolean isValidDate(String dateString) {
-        String regex = "^\\d{2}-\\d{2}-\\d{4}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(dateString);
-        return matcher.matches();
     }
 
 }
