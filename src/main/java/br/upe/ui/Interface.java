@@ -1,8 +1,9 @@
 package br.upe.ui;
 
 import br.upe.controller.Controller;
+import br.upe.controller.EventController;
+import br.upe.controller.SubEventController;
 import br.upe.controller.UserController;
-
 import java.util.Scanner;
 
 public class Interface {
@@ -33,8 +34,9 @@ public class Interface {
                             do {
                                 System.out.println("[1] - Criar Evento");
                                 System.out.println("[2] - Entrar em um Evento");
-                                System.out.println("[3] - Listar Eventos");
-                                System.out.println("[4] - Perfil");
+                                System.out.println("[3] - Criar SubEvento");
+                                System.out.println("[4] - Criar Sessão");
+                                System.out.println("[5] - Perfil");
                                 System.out.println("[0] - Voltar");
                                 System.out.print("Escolha uma opção: ");
                                 if (sc.hasNextInt()) {
@@ -47,15 +49,34 @@ public class Interface {
 
 
                                 switch (option) {
+
                                     case 1:
-                                        //criar evento
+                                        Controller ec = new EventController();
+                                        System.out.println("Digite o nome do Evento: ");
+                                        String nameEvent = sc.nextLine();
+                                        System.out.println("Data do Evento: ");
+                                        String dateEvent = sc.nextLine();
+                                        System.out.println("Descrição do Evento: ");
+                                        String descriptionEvent = sc.nextLine();
+                                        System.out.println("Local do Evento: ");
+                                        String locationEvent = sc.nextLine();
+                                        ec.create(nameEvent, dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
                                         break;
+
                                     case 2:
-                                        //entrar evento
                                         break;
                                     case 3:
-                                        //listar eventos criados
-                                    case 4:
+                                        Controller sec = (Controller) new SubEventController();
+                                        System.out.println("Digite o nome do SubEvento: ");
+                                        String nameSubEvent = sc.nextLine();
+                                        System.out.println("Descrição do Evento: ");
+                                        String descriptionSubEvent = sc.nextLine();
+                                        System.out.println("Data do Evento: ");
+                                        String dateSubEvent = sc.nextLine();
+                                        System.out.println("Local do Evento: ");
+                                        String locationSubEvent = sc.nextLine();
+                                        sec.create(nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+                                    case 5:
                                         boolean isRemoved = setup(sc, userLogin);
                                         if (isRemoved) {
                                             option = 0;

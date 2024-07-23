@@ -6,5 +6,8 @@ public interface  Persistence {
     void create(Object... params);
     void delete(Object... params);
     void update(Object... params);
-    HashMap<String, User> read();
+
+    String getData(String dataToGet);
+    void setData(String dataToSet, String data);
+    HashMap<String, Persistence> read();
 }

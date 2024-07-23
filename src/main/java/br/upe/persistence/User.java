@@ -1,8 +1,5 @@
 package br.upe.persistence;
 
-import br.upe.controller.Controller;
-import br.upe.controller.UserController;
-
 import java.io.*;
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -20,6 +17,36 @@ public class User implements Persistence {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String getData(String dataToGet) {
+        String data = "";
+        try {
+            switch (dataToGet) {
+                case "email" -> data = this.getEmail();
+                case "cpf" -> data = this.getCpf();
+                case "id" -> data = this.getId();
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Data don't exist or is restrict");
+        }
+        return data;
+    }
+
+    @Override
+    public void setData(String dataToSet, String data) {
+        try {
+            switch (dataToSet) {
+                case "email" -> this.setEmail(data);
+                case "cpf" -> this.setCpf(data);
+                case "id" -> this.setId(data);
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Data don't exist or is restrict");
+        }
     }
 
     private String generateId() {
@@ -60,11 +87,6 @@ public class User implements Persistence {
         String line = id + ";" + email + ";" + cpf;
 
         try {
-            File f = new File("./db/users.csv");
-            if (!f.getParentFile().exists()) {
-                f.getParentFile().mkdirs();
-            }
-
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv", true))) {
                 writer.write(line);
                 writer.newLine();
@@ -84,16 +106,16 @@ public class User implements Persistence {
             System.out.println("Só pode ter 1 parametro");
         }
 
-        HashMap<String, User> userHashMap = (HashMap<String, User>) params[0];
+        HashMap<String, Persistence> userHashMap = (HashMap<String, Persistence>) params[0];
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv"))) {
-            for (Map.Entry<String, User> entry : userHashMap.entrySet()) {
-                User user = entry.getValue();
-                String line = user.getId() + ";" + user.getEmail() + ";" + user.getCpf() + "\n";
+            for (Map.Entry<String, Persistence> entry : userHashMap.entrySet()) {
+                Persistence user = entry.getValue();
+                String line = user.getData("id") + ";" + user.getData("email") + ";" + user.getData("cpf") + "\n";
                 writer.write(line);
             }
             writer.close();
-            System.out.println("User Updated\n");
+            System.out.println("User Updated");
         } catch (IOException writerEx) {
             System.out.println("Error occurred while writing:");
             writerEx.printStackTrace();
@@ -106,12 +128,12 @@ public class User implements Persistence {
             System.out.println("Só pode ter 1 parametro");
         }
 
-        HashMap<String, User> userHashMap = (HashMap<String, User>) params[0];
+        HashMap<String, Persistence> userHashMap = (HashMap<String, Persistence>) params[0];
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/users.csv"))) {
-            for (Map.Entry<String, User> entry : userHashMap.entrySet()) {
-                User user = entry.getValue();
-                String line = user.getId() + ";" + user.getEmail() + ";" + user.getCpf() + "\n";
+            for (Map.Entry<String, Persistence> entry : userHashMap.entrySet()) {
+                Persistence user = entry.getValue();
+                String line = user.getData("id") + ";" + user.getData("email") + ";" + user.getData("cpf") + "\n";
                 writer.write(line);
             }
             writer.close();
@@ -123,8 +145,8 @@ public class User implements Persistence {
     }
 
     @Override
-    public HashMap<String, User> read() {
-        HashMap<String, User> list = new HashMap<>();
+    public HashMap<String, Persistence> read() {
+        HashMap<String, Persistence> list = new HashMap<>();
         try {
             BufferedReader reader = new BufferedReader(new FileReader("./db/users.csv"));
             String line;
@@ -148,8 +170,9 @@ public class User implements Persistence {
         } catch (IOException readerEx) {
             System.out.println("Error occurred while reading:");
             readerEx.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
         return list;
     }
 

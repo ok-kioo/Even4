@@ -1,24 +1,29 @@
 package br.upe.persistence;
+import java.io.*;
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.HashMap;
 
-import java.time.LocalDate;
 
-public class Event {
-    private int id;
+
+
+public class Event implements Persistence {
+    private String id;
     private String name;
-    private LocalDate date;
+    private String date;
     private String description;
     private String location;
-    private String idOwner;
+    private String ownerId;
 
     public String getIdOwner() {
-        return idOwner;
+        return ownerId;
     }
 
-    public void setIdOwner(String idOwner) {
-        this.idOwner = idOwner;
+    public void setIdOwner(String ownerId) {
+        this.ownerId = ownerId;
     }
 
-    public int getId() {
+    public String getId() {
 
         return id;
     }
@@ -28,7 +33,7 @@ public class Event {
         return name;
     }
 
-    public LocalDate getDate() {
+    public String  getDate() {
         return date;
     }
 
@@ -41,7 +46,7 @@ public class Event {
         return location;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
 
         this.id = id;
     }
@@ -51,7 +56,7 @@ public class Event {
         this.name = name;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
 
         this.date = date;
     }
@@ -66,8 +71,12 @@ public class Event {
         this.location = location;
     }
 
-    public void createEvent() {
-
+    private String generateId() {
+        SecureRandom secureRandom = new SecureRandom();
+        long timestamp = Instant.now().toEpochMilli();
+        int lastThreeDigitsOfTimestamp = (int) (timestamp % 1000);
+        int randomValue = secureRandom.nextInt(900) + 100;
+        return String.format("%03d%03d", lastThreeDigitsOfTimestamp, randomValue);
     }
 
     public void updateEvent() {
@@ -78,7 +87,24 @@ public class Event {
 
     }
 
-    public void readEvent() {
+    @Override
+    public void delete(Object... params) {
 
     }
+
+    @Override
+    public void update(Object... params) {
+
+    }
+
+    @Override
+    public String getData(String dataToGet) {
+        return "";
+    }
+
+    @Override
+    public void setData(String dataToSet, String data) {
+
+    }
+
 }

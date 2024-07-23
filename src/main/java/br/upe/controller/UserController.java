@@ -6,19 +6,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserController implements Controller {
-    private HashMap<String, User> userHashMap;
-    private User userLog;
+    private HashMap<String, Persistence> userHashMap;
+    private Persistence userLog;
 
     public UserController() {
         Persistence userPersistence = new User();
         this.userHashMap = userPersistence.read();
     }
 
-    public HashMap<String, User> getUserHashMap() {
+    public HashMap<String, Persistence> getUserHashMap() {
         return userHashMap;
     }
 
-    public void setUserHashMap(HashMap<String, User> userHashMap) {
+    public void setUserHashMap(HashMap<String, Persistence> userHashMap) {
         this.userHashMap = userHashMap;
     }
 
@@ -26,15 +26,14 @@ public class UserController implements Controller {
     public String getData(String dataToGet) {
         String data = "";
         try {
-            if (dataToGet.equals("email")) {
-                System.out.println();
-                data = this.userLog.getEmail();
-            } else if (dataToGet.equals("cpf")) {
-                data = this.userLog.getCpf();
-            } else if (dataToGet.equals("id")) {
-                data = this.userLog.getId();
-            } else {
-                throw new IOException();
+            switch (dataToGet) {
+                case "email" -> {
+                    System.out.println();
+                    data = this.userLog.getData("email");
+                }
+                case "cpf" -> data = this.userLog.getData("cpf");
+                case "id" -> data = this.userLog.getData("id");
+                default -> throw new IOException();
             }
         } catch (IOException e) {
             System.out.println("Data don't exist or is restrict");
@@ -42,7 +41,7 @@ public class UserController implements Controller {
         return data;
     }
 
-    private void setUserLog(User userLog) {
+    private void setUserLog(Persistence userLog) {
         this.userLog = userLog;
     }
 
@@ -56,9 +55,9 @@ public class UserController implements Controller {
         String cpf = (String) params[1];
         Persistence userPersistence = new User();
         try {
-            for (Map.Entry<String, User> entry : this.userHashMap.entrySet()) {
-                User user = entry.getValue();
-                if (user.getEmail().equals(email)) {
+            for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {
+                Persistence user = entry.getValue();
+                if (user.getData("email").equals(email)) {
                     throw new IOException();
                 }
             }
@@ -68,8 +67,6 @@ public class UserController implements Controller {
         } catch (IOException exception) {
             System.out.println("Email already signed");
         }
-
-
     }
 
     @Override
@@ -87,14 +84,14 @@ public class UserController implements Controller {
         Persistence userPersistence = new User();
         String email = (String) params[0];
         String cpf = (String) params[1];
-        User user = userHashMap.get(this.userLog.getId());
+        Persistence user = userHashMap.get(this.userLog.getData("id"));
         if (user == null) {
             System.out.println("Usuário não encontrado");
             return;
         }
-        user.setEmail(email);
-        user.setCpf(cpf);
-        userHashMap.put(this.userLog.getId(), user);
+        user.setData("email",email);
+        user.setData("cpf", cpf);
+        userHashMap.put(this.userLog.getData("id"), user);
 
         userPersistence.update(userHashMap);
     }
@@ -105,9 +102,9 @@ public class UserController implements Controller {
     }
 
     public boolean loginValidate(String email, String cpf) {
-        for (Map.Entry<String, User> entry : this.userHashMap.entrySet()) {
-            User user = entry.getValue();
-            if (user.getEmail().equals(email) && user.getCpf().equals(cpf)) {
+        for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {
+            Persistence user = entry.getValue();
+            if (user.getData("email").equals(email) && user.getData("cpf").equals(cpf)) {
                 setUserLog(user);
                 return true;
             }
