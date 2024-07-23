@@ -55,10 +55,6 @@ public class SubEventController implements Controller {
         }
     }
 
-    @Override
-    public void deleteById(String id) {
-
-    }
 
     @Override
     public void update(Object... params) {
@@ -67,6 +63,16 @@ public class SubEventController implements Controller {
 
     @Override
     public void read() {
+
+    }
+
+    @Override
+    public void delete(Object... params) {
+
+    }
+
+    @Override
+    public void list(String idowner) {
 
     }
 

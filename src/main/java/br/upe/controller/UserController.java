@@ -1,8 +1,10 @@
 package br.upe.controller;
+import br.upe.persistence.Event;
 import br.upe.persistence.Persistence;
 import br.upe.persistence.User;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class UserController implements Controller {
@@ -69,13 +71,6 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void deleteById(String id) {
-        Persistence userPersistence = new User();
-        userHashMap.remove(id);
-        userPersistence.delete(userHashMap);
-    }
-
-    @Override
     public void update(Object... params) {
         if (params.length < 2) {
             System.out.println("Só pode ter 2 parametros");
@@ -100,6 +95,30 @@ public class UserController implements Controller {
         Persistence userPersistence = new User();
         this.userHashMap = userPersistence.read();
     }
+
+    @Override
+    public void delete(Object... params) {
+        switch ((String) params[1]) {
+            case "id":
+                Iterator<Map.Entry<String, Persistence>> iterator = userHashMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Persistence> entry = iterator.next();
+                    Persistence user = entry.getValue();
+                    if (user.getData("id").equals((String) params[0])) {
+                        iterator.remove();
+                    }
+                }
+                Persistence userPersistence = new User();
+                userPersistence.delete(userHashMap);
+                break;
+        }
+    }
+
+    @Override
+    public void list(String idowner) {
+
+    }
+
 
     public boolean loginValidate(String email, String cpf) {
         for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {
