@@ -10,4 +10,5 @@ public interface Controller {
 
     boolean loginValidate(String email, String cpf);
     String getData(String dataToGet);
+
 }

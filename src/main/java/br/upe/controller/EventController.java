@@ -31,12 +31,12 @@ public class EventController implements Controller {
         if (params.length != 5) {
             System.out.println("Só pode ter 5 parametros");
         }
-         String name = (String) params[0];
-         String date = (String) params[1];
-         String description = (String) params[2];
-         String location = (String) params[3];
-         String idOwner = (String) params[4];
-         Persistence event = (Persistence) new Event();
+        String name = (String) params[0];
+        String date = (String) params[1];
+        String description = (String) params[2];
+        String location = (String) params[3];
+        String idOwner = (String) params[4];
+        Persistence event = (Persistence) new Event();
 
         try {
             for (Map.Entry<String, Persistence> entry : this.eventHashMap.entrySet()) {
