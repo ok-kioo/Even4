@@ -3,6 +3,7 @@ package br.upe.ui;
 import br.upe.controller.Controller;
 import br.upe.controller.EventController;
 import br.upe.controller.SubEventController;
+import br.upe.controller.SessionController;
 import br.upe.controller.UserController;
 
 import java.io.FileNotFoundException;
@@ -38,8 +39,7 @@ public class Interface {
     private static void printMainMenu() {
         System.out.println("[1] - Login");
         System.out.println("[2] - Cadastrar");
-        System.out.println("[0] - Sair");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("[0] - Sair\nEscolha uma opção: ");
     }
 
     private static int getOption(Scanner sc) {
@@ -72,13 +72,14 @@ public class Interface {
 
             Controller ec = new EventController();
             Controller sec = new SubEventController();
+            Controller sesc = new SessionController();
 
             switch (option) {
                 case 1:
-                    createFlow(sc, ec, sec, userLogin);
+                    createFlow(sc, ec, sec, sesc, userLogin);
                     break;
                 case 2:
-                    alterFlow(sc, ec, sec, userLogin);
+                    alterFlow(sc, ec, sec, sesc, userLogin);
                     break;
                 case 8:
                     if (setup(sc, userLogin)) {
@@ -99,18 +100,17 @@ public class Interface {
         System.out.println("[2] - Alterar");
         System.out.println("[3] - Entrar em um Evento");
         System.out.println("[8] - Perfil");
-        System.out.println("[0] - Voltar");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("[0] - Voltar\nEscolha uma opção: ");
     }
 
-    private static void createFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
+    private static void createFlow(Scanner sc, Controller ec, Controller sec, Controller sesc, Controller userLogin) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha o que deseja criar:");
             System.out.println("[1] - Evento");
             System.out.println("[2] - SubEvento");
             System.out.println("[3] - Sessão");
-            System.out.println("[0] - Voltar");
+            System.out.print("[0] - Voltar\nEscolha uma opção: ");
             option = getOption(sc);
 
             switch (option) {
@@ -119,6 +119,9 @@ public class Interface {
                     break;
                 case 2:
                     createSubEvent(sc, sec, userLogin);
+                    break;
+                case 3:
+                    createSession(sc, sesc, userLogin);
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -129,14 +132,14 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void alterFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
+    private static void alterFlow(Scanner sc, Controller ec, Controller sec, Controller sesc, Controller userLogin) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha o que deseja alterar:");
             System.out.println("[1] - Evento");
             System.out.println("[2] - SubEvento");
             System.out.println("[3] - Sessão");
-            System.out.println("[0] - Voltar");
+            System.out.print("[0] - Voltar\nEscolha uma opção: ");
             option = getOption(sc);
 
             switch (option) {
@@ -145,6 +148,9 @@ public class Interface {
                     break;
                 case 2:
                     alterSubEvent(sc, sec, userLogin);
+                    break;
+                case 3:
+                    alterSession(sc, sesc, userLogin);
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -201,8 +207,7 @@ public class Interface {
     private static void printAlterEventMenu() {
         System.out.println("[1] - Apagar Evento ");
         System.out.println("[2] - Alterar Evento ");
-        System.out.println("[0] - Voltar");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("[0] - Voltar\nEscolha uma opção: ");
     }
 
     private static void updateEvent(Scanner sc, Controller ec, String changed, String userId) throws FileNotFoundException {
@@ -264,8 +269,7 @@ public class Interface {
     private static void printAlterSubEventMenu() {
         System.out.println("[1] - Apagar SubEvento ");
         System.out.println("[2] - Alterar SubEvento ");
-        System.out.println("[0] - Voltar");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("[0] - Voltar\nEscolha uma opção: ");
     }
 
     private static void updateSubEvent(Scanner sc, Controller sec, String subChanged, String userId) throws FileNotFoundException {
@@ -278,6 +282,72 @@ public class Interface {
         System.out.println("Novo Local do SubEvento: ");
         String newLocation = sc.nextLine();
         sec.update(subChanged, newName, newDate, newDescription, newLocation, userId);
+    }
+
+    private static void createSession(Scanner sc, Controller sesc, Controller userLogin) throws FileNotFoundException {
+        System.out.println("Digite o nome do evento pai");
+        String eventFather = sc.nextLine();
+        System.out.println("Digite o nome da Sessão: ");
+        String nameSession = sc.nextLine();
+        System.out.println("Data da Sessão: ");
+        String dateSession = sc.nextLine();
+        System.out.println("Descrição da Sessão: ");
+        String descriptionSession = sc.nextLine();
+        System.out.println("Local da Sessão: ");
+        String locationSession = sc.nextLine();
+        System.out.println("Hora de inicio");
+        String starttimeSession = sc.nextLine();
+        System.out.println("Hora de fim");
+        String endtimeSession = sc.nextLine();
+        sesc.create(eventFather ,nameSession, dateSession, descriptionSession, locationSession, starttimeSession, endtimeSession , userLogin.getData("id"));
+    }
+
+    private static void alterSession(Scanner sc, Controller sesc, Controller userLogin) throws FileNotFoundException {
+        boolean isNull = sesc.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
+        int optionSession;
+        do {
+            System.out.println("Selecione uma Sessão: ");
+            String sessionChanged = sc.nextLine();
+            printAlterSessionMenu();
+
+            optionSession = getOption(sc);
+            switch (optionSession) {
+                case 1:
+                    sesc.delete(sessionChanged, "name", userLogin.getData("id"));
+                    optionSession = 0;
+                    break;
+                case 2:
+                    updateSession(sc, sesc, sessionChanged, userLogin.getData("id"));
+                    optionSession = 0;
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (optionSession != 0);
+    }
+
+    private static void printAlterSessionMenu() {
+        System.out.println("[1] - Apagar Sessão ");
+        System.out.println("[2] - Alterar Sessão ");
+        System.out.print("[0] - Voltar\nEscolha uma opção: ");
+    }
+
+    private static void updateSession(Scanner sc, Controller sesc, String sessionChanged, String userId) throws FileNotFoundException {
+        System.out.println("Digite o novo nome da Sessão: ");
+        String newName = sc.nextLine();
+        System.out.println("Nova Data da Sessão: ");
+        String newDate = sc.nextLine();
+        System.out.println("Nova Descrição da Sessão: ");
+        String newDescription = sc.nextLine();
+        System.out.println("Novo Local da Sessão: ");
+        String newLocation = sc.nextLine();
+        sesc.update(sessionChanged, newName, newDate, newDescription, newLocation, userId);
     }
 
     public static Object[] login(Scanner sc) {
@@ -359,8 +429,7 @@ public class Interface {
     private static void printSetupMenu() {
         System.out.println("[1] - Atualizar conta");
         System.out.println("[2] - Deletar conta");
-        System.out.println("[0] - Voltar");
-        System.out.print("Escolha uma opção: ");
+        System.out.print("[0] - Voltar\nEscolha uma opção: ");
     }
 
     private static void updateUserAccount(Scanner sc, Controller userLogin) throws FileNotFoundException {
@@ -368,7 +437,7 @@ public class Interface {
         System.out.println("O que você deseja atualizar?");
         System.out.println("[1] - email");
         System.out.println("[2] - cpf");
-        System.out.println("[0] - voltar");
+        System.out.print("[0] - voltar\nEscolha uma opção: ");
         option = getOption(sc);
 
         switch (option) {
