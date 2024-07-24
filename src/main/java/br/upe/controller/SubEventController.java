@@ -54,7 +54,7 @@ public class SubEventController implements Controller {
     @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
-            System.out.println("Só pode ter 6 parametros");
+            System.out.println("Só pode ter 6 parâmetros");
             return;
         }
 
@@ -72,24 +72,24 @@ public class SubEventController implements Controller {
             return;
         }
 
-        try {
-            for (Map.Entry<String, Persistence> entry : this.subEventHashMap.entrySet()) {
-                Persistence subEventindice = entry.getValue();
-                if (subEventindice.getData("name").equals(name) || name.isEmpty()) {
-                    throw new IOException();
-                }
+        boolean nomeEmUso = false;
+        for (Map.Entry<String, Persistence> entry : this.subEventHashMap.entrySet()) {
+            Persistence subEvent = entry.getValue();
+            if (subEvent.getData("name").equals(name)) {
+                nomeEmUso = true;
+                break; //
             }
-
-            if (isValidDate(date)) {
-                Persistence subEvent = new SubEvent();
-                subEvent.create(eventId, name, date, description, location, userId);
-            } else {
-                throw new IllegalArgumentException("Data inválida: " + date);
-            }
-        } catch (IOException exception) {
-            System.out.println("Nome vazio ou em uso\n");
         }
+
+        if (nomeEmUso || name.isEmpty()) {
+            System.out.println("Nome vazio ou em uso");
+            return;
+        }
+
+        Persistence subEvent = new SubEvent();
+        subEvent.create(eventId, name, date, description, location, userId);
     }
+
 
     @Override
     public void delete(Object... params) {
@@ -207,13 +207,6 @@ public class SubEventController implements Controller {
         return false;
     }
 
-    private boolean isValidDate(String dateString) {
-        String regex = "^\\d{2}[^\\d]\\d{2}[^\\d]\\d{4}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(dateString);
-        return matcher.matches();
-    }
-
     private String getFatherEventId(String searchId) throws FileNotFoundException {
         EventController ec = new EventController();
         String fatherId = "";
@@ -229,6 +222,7 @@ public class SubEventController implements Controller {
         }
         if (!found){
             System.out.println("Evento pai não encontrado\n");
+
         }
 
         return fatherId;

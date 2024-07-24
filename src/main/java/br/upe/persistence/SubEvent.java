@@ -140,7 +140,6 @@ public class SubEvent extends Event implements Persistence{
 
             try (BufferedWriter writer = new BufferedWriter(new FileWriter("./db/subEvents.csv", true))) {
                 writer.write(line);
-                writer.newLine();
             }
 
             System.out.println("SubEvento Criado");
