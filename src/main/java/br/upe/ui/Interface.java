@@ -7,6 +7,11 @@ import br.upe.controller.UserController;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static br.upe.ui.Validation.isValidCPF;
+import static br.upe.ui.Validation.isValidEmail;
 
 public class Interface {
 
@@ -79,6 +84,9 @@ public class Interface {
                     break;
                 case 2:
                     alterFlow(sc, ec, sec, userLogin);
+                    break;
+                case 3:
+                    enterFlow(sc, ec, sec, userLogin);
                     break;
                 case 8:
                     if (setup(sc, userLogin)) {
@@ -153,6 +161,13 @@ public class Interface {
                     System.out.println("Opção inválida. Tente novamente.");
             }
         } while (option != 0);
+    }
+
+    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) {
+        ec.show(userLogin.getData("id"));
+        sec.show(userLogin.getData("id"));
+        System.out.println("Digite o evento que você deseja entrar: ");
+        String event = sc.nextLine();
     }
 
     private static void createEvent(Scanner sc, Controller ec, Controller userLogin) throws FileNotFoundException {
@@ -305,12 +320,16 @@ public class Interface {
         System.out.println("Cadastre seu email:");
         if (sc.hasNextLine()) {
             String email = sc.nextLine();
-
+            if (!isValidEmail(email) || email.isEmpty() ) {
+                System.out.println("Email inválido. Tente novamente.");
+                main(new String[]{"a", "b"});
+                return;
+            }
             System.out.println("Digite seu cpf:");
             if (sc.hasNextLine()) {
                 String cpf = sc.nextLine();
-                if (email.isEmpty() || cpf.isEmpty()) {
-                    System.out.println("Usuário ou senha vazio");
+                if (isValidCPF(cpf) || cpf.isEmpty()) {
+                    System.out.println("CPF inválido. Tente novamente");
                     main(new String[]{"a", "b"});
                 }
                 userController.create(email.trim(), cpf.trim());

@@ -117,6 +117,11 @@ public class UserController implements Controller {
         return false;
     }
 
+    @Override
+    public void show(String id) {
+
+    }
+
 
     public boolean loginValidate(String email, String cpf) {
         for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {

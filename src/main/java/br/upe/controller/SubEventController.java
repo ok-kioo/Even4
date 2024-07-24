@@ -7,6 +7,8 @@ import br.upe.persistence.Persistence;
 import br.upe.persistence.User;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -135,6 +137,16 @@ public class SubEventController implements Controller {
             e.printStackTrace();
         }
         return isnull;
+    }
+
+    @Override
+    public void show(String id) {
+        for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals(id)){
+                System.out.println(persistence.getData("name"));
+            }
+        }
     }
 
     @Override

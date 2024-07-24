@@ -5,6 +5,8 @@ import br.upe.persistence.User;
 
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -20,7 +22,6 @@ public class EventController implements Controller {
     public EventController() {
         this.read();
     }
-
 
     public HashMap<String, Persistence> getEventHashMap() {
         return eventHashMap;
@@ -52,6 +53,16 @@ public class EventController implements Controller {
         }
 
         return isnull;
+    }
+
+    @Override
+    public void show(String id) {
+        for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals(id)){
+                System.out.println(persistence.getData("name"));
+            }
+        }
     }
 
     @Override
