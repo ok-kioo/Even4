@@ -250,9 +250,14 @@ public class Interface {
         System.out.println("Cadastre seu email:");
         if (sc.hasNextLine()) {
             String email = sc.nextLine();
+
             System.out.println("Digite seu cpf:");
             if (sc.hasNextLine()) {
                 String cpf = sc.nextLine();
+                if (email.isEmpty() || cpf.isEmpty()) {
+                    System.out.println("Usuário ou senha vazio");
+                    main(new String[]{"a", "b"});
+                }
                 userController.create(email, cpf);
             } else {
                 System.out.println("Erro ao ler cpf.");
@@ -262,7 +267,7 @@ public class Interface {
         }
     }
 
-    public static boolean setup(Scanner sc, Controller userLogin) {
+    public static boolean setup(Scanner sc, Controller userLogin) throws FileNotFoundException {
         int option;
         boolean isRemoved = false;
         do {
@@ -276,6 +281,10 @@ public class Interface {
                     break;
                 case 2:
                     isRemoved = deleteUserAccount(sc, userLogin);
+                    if (isRemoved) {
+                        String [] args = {"a", "b"};
+                        main(args);
+                    }
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -340,6 +349,7 @@ public class Interface {
 
         if (option == 1) {
             userLogin.delete(userLogin.getData("id"), "id");
+
             return true;
         } else {
             System.out.println("Voltando...");

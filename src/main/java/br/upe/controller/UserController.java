@@ -98,19 +98,17 @@ public class UserController implements Controller {
 
     @Override
     public void delete(Object... params) {
-        switch ((String) params[1]) {
-            case "id":
-                Iterator<Map.Entry<String, Persistence>> iterator = userHashMap.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, Persistence> entry = iterator.next();
-                    Persistence user = entry.getValue();
-                    if (user.getData("id").equals((String) params[0])) {
-                        iterator.remove();
-                    }
+        if (((String) params[1]).equals("id")) {
+            Iterator<Map.Entry<String, Persistence>> iterator = userHashMap.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Persistence> entry = iterator.next();
+                Persistence user = entry.getValue();
+                if (user.getData("id").equals((String) params[0])) {
+                    iterator.remove();
                 }
-                Persistence userPersistence = new User();
-                userPersistence.delete(userHashMap);
-                break;
+            }
+            Persistence userPersistence = new User();
+            userPersistence.delete(userHashMap);
         }
     }
 
