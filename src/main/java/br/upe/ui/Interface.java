@@ -104,7 +104,7 @@ public class Interface {
         System.out.println("[1] - Criar");
         System.out.println("[2] - Alterar");
         System.out.println("[3] - Entrar em um Evento");
-        System.out.println("[8] - Perfil");
+        System.out.println("[4] - Perfil");
         System.out.println("[0] - Voltar");
         System.out.print("Escolha uma opção: ");
     }
@@ -236,7 +236,7 @@ public class Interface {
     }
 
     private static void createSubEvent(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
-        sec.list(userLogin.getData("id"));
+        ec.list(userLogin.getData("id"));
         System.out.println("Nome do Evento Pai: ");
         String fatherEvent = sc.nextLine();
         System.out.println("Digite o nome do SubEvento: ");
