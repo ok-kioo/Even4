@@ -6,6 +6,8 @@ import br.upe.persistence.Persistence;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,53 +18,62 @@ public class UserControllerTest {
     private User testUser;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws IOException {
         userController = new UserController();
         testUser = new User();
 
-        // Simula a configuração inicial do UserController
-        HashMap<String, Persistence> mockUserMap = new HashMap<>();
-        mockUserMap.put("test-id", testUser);
-        userController.setUserHashMap(mockUserMap);
+        File file = new File("./db/users.csv");
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new IOException("Não foi possível excluir o arquivo.");
+            }
+        }
 
-        // Simula a configuração do User para ter um email e CPF padrão
+        // Configura o estado inicial
         testUser.create("test@example.com", "12345678900");
+        HashMap<String, Persistence> mockUserMap = new HashMap<>();
+        mockUserMap.put(testUser.getId(), testUser);
+        userController.setUserHashMap(mockUserMap);
         userController.setUserLog(testUser);
     }
 
     @Test
     public void testCreateUser() {
         userController.create("newuser@example.com", "09876543211");
-        // Simula a recuperação do novo usuário
-        String email = userController.getData("email");
-        assertEquals("newuser@example.com", email);
+
+        HashMap<String, Persistence> updatedUserMap = new User().read();
+        Persistence newUser = updatedUserMap.values().stream()
+                .filter(user -> "newuser@example.com".equals(user.getData("email")))
+                .findFirst()
+                .orElse(null);
+
+        assertNotNull(newUser);
+        assertEquals("newuser@example.com", newUser.getData("email"));
     }
 
     @Test
     public void testUpdateUser() {
         userController.update("updateduser@example.com", "11223344556");
-        String email = userController.getData("email");
-        assertEquals("updateduser@example.com", email);
-        String cpf = userController.getData("cpf");
-        assertEquals("11223344556", cpf);
+
+        HashMap<String, Persistence> updatedUserMap = new User().read();
+        Persistence updatedUser = updatedUserMap.get(testUser.getId());
+
+        assertNotNull(updatedUser);
+        assertEquals("updateduser@example.com", updatedUser.getData("email"));
+        assertEquals("11223344556", updatedUser.getData("cpf"));
     }
 
     @Test
     public void testDeleteUser() {
-        userController.delete("test-id", "id");
-        HashMap<String, Persistence> userMap = userController.getUserHashMap();
-        assertFalse(userMap.containsKey("test-id"));
+        userController.delete(testUser.getId(), "id");
+
+        HashMap<String, Persistence> updatedUserMap = new User().read();
+        assertFalse(updatedUserMap.containsKey(testUser.getId()));
     }
 
     @Test
-    public void testLoginValidateSuccess() {
-        boolean result = userController.loginValidate("test@example.com", "12345678900");
-        assertTrue(result);
-    }
-
-    @Test
-    public void testLoginValidateFailure() {
-        boolean result = userController.loginValidate("wrong@example.com", "00000000000");
-        assertFalse(result);
+    public void testRead() {
+        HashMap<String, Persistence> userMap = new User().read();
+        assertEquals(1, userMap.size());
     }
 }

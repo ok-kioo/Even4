@@ -1,9 +1,11 @@
 package br.upe.controller;
 import br.upe.persistence.Event;
 import br.upe.persistence.Persistence;
+import br.upe.persistence.SubEvent;
 import br.upe.persistence.User;
 
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -66,49 +68,68 @@ public class EventController implements Controller {
     }
 
     @Override
-    public void update(Object... params) {
+    public void update(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
             System.out.println("Só pode ter 6 parametros");
+            return;
         }
 
-        Persistence eventPersistence = new Event();
-        String name = (String) params[1];
-        String date = (String) params[2];
-        String description = (String) params[3];
-        String location = (String) params[4];
+        String oldName = (String) params[0];
+        String newName = (String) params[1];
+        String newDate = (String) params[2];
+        String newDescription = (String) params[3];
+        String newLocation = (String) params[4];
         String userId = (String) params[5];
-        String id = "";
-        String ownerId = "";
+
+        boolean isOwner = false;
+        String id = null;
+
         for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (persistence.getData("name").equals((String) params[0])){
+            String name = persistence.getData("name");
+            String ownerId = persistence.getData("ownerId");
+
+            if (name != null && name.equals(oldName) && ownerId != null && ownerId.equals(userId)) {
+                isOwner = true;
                 id = persistence.getData("id");
-                ownerId = persistence.getData("ownerId");
+                break;
             }
         }
 
-        if(ownerId.equals(userId)) {
-            Persistence newEvent = eventHashMap.get(id);
-
-            if (newEvent == null) {
-                System.out.println("Evento não encontrado");
-                return;
-            }
-
+        if (isOwner) {
+            boolean nameExists = false;
             for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
-                Persistence eventindice = entry.getValue();
-                if (eventindice.getData("name").equals((String) params[0])) {
-                    newEvent.setData("name", name);
-                    newEvent.setData("date", date);
-                    newEvent.setData("description", description);
-                    newEvent.setData("location", location);
-                    eventHashMap.put(id, newEvent);
+                Persistence subEvent = entry.getValue();
+                String name = subEvent.getData("name");
+                if (name != null && name.equals(newName)) {
+                    nameExists = true;
+                    break;
                 }
             }
 
-            eventPersistence.update(eventHashMap);
+            if (nameExists) {
+                System.out.println("Nome em uso");
+                return;
+            }
+
+            if (id != null) {
+                Persistence newSubEvent = eventHashMap.get(id);
+                if (newSubEvent != null) {
+                    newSubEvent.setData("name", newName);
+                    newSubEvent.setData("date", newDate);
+                    newSubEvent.setData("description", newDescription);
+                    newSubEvent.setData("location", newLocation);
+                    eventHashMap.put(id, newSubEvent);
+                    Persistence subEventPersistence = new SubEvent();
+                    subEventPersistence.update(eventHashMap);
+                } else {
+                    System.out.println("SubEvento não encontrado");
+                }
+            } else {
+                System.out.println("Você não pode alterar este SubEvento");
+            }
         } else {
-            System.out.println("Você não pode alterar este evento");
+            System.out.println("Você não pode alterar este SubEvento");
         }
     }
 

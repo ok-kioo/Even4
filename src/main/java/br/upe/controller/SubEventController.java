@@ -153,44 +153,63 @@ public class SubEventController implements Controller {
     public void update(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
             System.out.println("Só pode ter 6 parametros");
+            return;
         }
 
-        Persistence subEventPersistence = new SubEvent();
-        String name = (String) params[1];
-        String date = (String) params[2];
-        String description = (String) params[3];
-        String location = (String) params[4];
+        String oldName = (String) params[0];
+        String newName = (String) params[1];
+        String newDate = (String) params[2];
+        String newDescription = (String) params[3];
+        String newLocation = (String) params[4];
         String userId = (String) params[5];
-        String id = "";
-        String ownerId = "";
+
+        boolean isOwner = false;
+        String id = null;
+
         for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (persistence.getData("name").equals((String) params[0])) {
+            String name = persistence.getData("name");
+            String ownerId = persistence.getData("ownerId");
+
+            if (name != null && name.equals(oldName) && ownerId != null && ownerId.equals(userId)) {
+                isOwner = true;
                 id = persistence.getData("id");
-                ownerId = persistence.getData("ownerId");
+                break;
             }
         }
 
-        if (ownerId.equals(userId)) {
-            Persistence newSubEvent = subEventHashMap.get(id);
-
-            if (newSubEvent == null) {
-                System.out.println("SubEvento não encontrado");
-                return;
-            }
-
+        if (isOwner) {
+            boolean nameExists = false;
             for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
-                Persistence subEventindice = entry.getValue();
-                if (subEventindice.getData("name").equals((String) params[0])) {
-                    newSubEvent.setData("name", name);
-                    newSubEvent.setData("date", date);
-                    newSubEvent.setData("description", description);
-                    newSubEvent.setData("location", location);
-                    subEventHashMap.put(id, newSubEvent);
+                Persistence subEvent = entry.getValue();
+                String name = subEvent.getData("name");
+                if (name != null && name.equals(newName)) {
+                    nameExists = true;
+                    break;
                 }
             }
 
-            subEventPersistence.update(subEventHashMap);
+            if (nameExists) {
+                System.out.println("Nome em uso");
+                return;
+            }
+
+            if (id != null) {
+                Persistence newSubEvent = subEventHashMap.get(id);
+                if (newSubEvent != null) {
+                    newSubEvent.setData("name", newName);
+                    newSubEvent.setData("date", newDate);
+                    newSubEvent.setData("description", newDescription);
+                    newSubEvent.setData("location", newLocation);
+                    subEventHashMap.put(id, newSubEvent);
+                    Persistence subEventPersistence = new SubEvent();
+                    subEventPersistence.update(subEventHashMap);
+                } else {
+                    System.out.println("SubEvento não encontrado");
+                }
+            } else {
+                System.out.println("Você não pode alterar este SubEvento");
+            }
         } else {
             System.out.println("Você não pode alterar este SubEvento");
         }

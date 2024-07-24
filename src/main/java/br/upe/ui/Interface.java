@@ -179,7 +179,7 @@ public class Interface {
         System.out.println("Local do Evento: ");
         String locationEvent = sc.nextLine();
         if (vl.isValidDate(dateEvent)){
-            ec.create(nameEvent, dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
+            ec.create(nameEvent.trim(), dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
         }
     }
 
@@ -231,7 +231,7 @@ public class Interface {
         System.out.println("Novo Local do Evento: ");
         String newLocation = sc.nextLine();
         if (vl.isValidDate(newDate)){
-            ec.update(changed, newName, newDate, newDescription, newLocation, userId);
+            ec.update(changed.trim(), newName.trim(), newDate, newDescription, newLocation, userId);
         }
     }
 
@@ -249,7 +249,7 @@ public class Interface {
         System.out.println("Local do SubEvento: ");
         String locationSubEvent = sc.nextLine();
         if (vl.isValidDate(dateSubEvent)){
-            sec.create(fatherEvent, nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+            sec.create(fatherEvent.trim(), nameSubEvent.trim(), dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
         }
     }
 
@@ -301,7 +301,7 @@ public class Interface {
         System.out.println("Novo Local do SubEvento: ");
         String newLocation = sc.nextLine();
         if (vl.isValidDate(newDate)){
-            sec.update(subChanged, newName, newDate, newDescription, newLocation, userId);
+            sec.update(subChanged.trim(), newName.trim(), newDate, newDescription, newLocation, userId);
         }
 
     }
