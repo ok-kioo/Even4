@@ -9,7 +9,7 @@ public interface Controller {
     void update(Object... params);
     void read();
     void delete(Object... params);
-    void list(String idowner);
+    boolean list(String idowner);
 
     boolean loginValidate(String email, String cpf);
     String getData(String dataToGet);

@@ -115,8 +115,8 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void list(String idowner) {
-
+    public boolean list(String idowner) {
+        return false;
     }
 
 
