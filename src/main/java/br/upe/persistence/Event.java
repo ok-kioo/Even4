@@ -128,7 +128,6 @@ public class Event implements Persistence {
         try {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(f, true))) {
                 writer.write(line);
-                writer.newLine();
             }
 
             System.out.println("Evento Criado\n");

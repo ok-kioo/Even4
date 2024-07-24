@@ -80,7 +80,7 @@ public class Interface {
                 case 2:
                     alterFlow(sc, ec, sec, userLogin);
                     break;
-                case 8:
+                case 4:
                     if (setup(sc, userLogin)) {
                         option = 0;
                     }
@@ -98,7 +98,7 @@ public class Interface {
         System.out.println("[1] - Criar");
         System.out.println("[2] - Alterar");
         System.out.println("[3] - Entrar em um Evento");
-        System.out.println("[8] - Perfil");
+        System.out.println("[4] - Perfil");
         System.out.println("[0] - Voltar");
         System.out.print("Escolha uma opção: ");
     }
@@ -160,11 +160,14 @@ public class Interface {
         String nameEvent = sc.nextLine();
         System.out.println("Data do Evento: ");
         String dateEvent = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Descrição do Evento: ");
         String descriptionEvent = sc.nextLine();
         System.out.println("Local do Evento: ");
         String locationEvent = sc.nextLine();
-        ec.create(nameEvent, dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
+        if (vl.isValidDate(dateEvent)){
+            ec.create(nameEvent, dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
+        }
     }
 
     private static void alterEvent(Scanner sc, Controller ec, Controller userLogin) throws FileNotFoundException {
@@ -185,7 +188,6 @@ public class Interface {
                     optionEvent = 0;
                     break;
                 case 2:
-                    System.out.println(userLogin.getData("id"));
                     updateEvent(sc, ec, changed, userLogin.getData("id"));
                     optionEvent = 0;
                     break;
@@ -210,11 +212,14 @@ public class Interface {
         String newName = sc.nextLine();
         System.out.println("Nova Data do Evento: ");
         String newDate = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Nova Descrição do Evento: ");
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do Evento: ");
         String newLocation = sc.nextLine();
-        ec.update(changed, newName, newDate, newDescription, newLocation, userId);
+        if (vl.isValidDate(newDate)){
+            ec.update(changed, newName, newDate, newDescription, newLocation, userId);
+        }
     }
 
     private static void createSubEvent(Scanner sc, Controller sec, Controller userLogin) throws FileNotFoundException {
@@ -224,11 +229,14 @@ public class Interface {
         String nameSubEvent = sc.nextLine();
         System.out.println("Data do SubEvento: ");
         String dateSubEvent = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Descrição do SubEvento: ");
         String descriptionSubEvent = sc.nextLine();
         System.out.println("Local do SubEvento: ");
         String locationSubEvent = sc.nextLine();
-        sec.create(fatherEvent, nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+        if (vl.isValidDate(dateSubEvent)){
+            sec.create(fatherEvent, nameSubEvent, dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
+        }
     }
 
     private static void alterSubEvent(Scanner sc, Controller sec, Controller userLogin) throws FileNotFoundException {
@@ -273,11 +281,15 @@ public class Interface {
         String newName = sc.nextLine();
         System.out.println("Nova Data do SubEvento: ");
         String newDate = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Nova Descrição do SubEvento: ");
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do SubEvento: ");
         String newLocation = sc.nextLine();
-        sec.update(subChanged, newName, newDate, newDescription, newLocation, userId);
+        if (vl.isValidDate(newDate)){
+            sec.update(subChanged, newName, newDate, newDescription, newLocation, userId);
+        }
+
     }
 
     public static Object[] login(Scanner sc) {
