@@ -11,7 +11,6 @@ public class Certification {
     private String name;
     private LocalDateTime date;
     private String location;
-    private List<Attendee> attendeeList;
     private String cpf;
     private String eventName;
     private String duration;
@@ -46,14 +45,6 @@ public class Certification {
 
     public void setLocation(String location) {
         this.location = location;
-    }
-
-    public List<Attendee> getAttendeeList() {
-        return attendeeList;
-    }
-
-    public void setAttendeeList(List<Attendee> attendeeList) {
-        this.attendeeList = attendeeList;
     }
 
     public String getCpf() {
