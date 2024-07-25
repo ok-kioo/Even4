@@ -1,15 +1,11 @@
 package br.upe.ui;
 
-import br.upe.controller.Controller;
-import br.upe.controller.EventController;
-import br.upe.controller.SubEventController;
-import br.upe.controller.UserController;
+import br.upe.controller.*;
 
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import static br.upe.ui.Validation.isValidCPF;
-import static br.upe.ui.Validation.isValidEmail;
+import static br.upe.ui.Validation.*;
 
 public class Interface {
 
@@ -75,13 +71,14 @@ public class Interface {
 
             Controller ec = new EventController();
             Controller sec = new SubEventController();
+            Controller ses = new SessionController();
 
             switch (option) {
                 case 1:
-                    createFlow(sc, ec, sec, userLogin);
+                    createFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 2:
-                    alterFlow(sc, ec, sec, userLogin);
+                    alterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
                     enterFlow(sc, ec, sec, userLogin);
@@ -109,7 +106,7 @@ public class Interface {
         System.out.print("Escolha uma opção: ");
     }
 
-    private static void createFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
+    private static void createFlow(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha o que deseja criar:");
@@ -126,6 +123,8 @@ public class Interface {
                 case 2:
                     createSubEvent(sc, ec, sec, userLogin);
                     break;
+                case 3:
+                    createSession(sc, ec, sec, ses, userLogin);
                 case 0:
                     System.out.println("Voltando...");
                     break;
@@ -135,7 +134,7 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void alterFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
+    private static void alterFlow(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha o que deseja alterar:");
@@ -152,6 +151,8 @@ public class Interface {
                 case 2:
                     alterSubEvent(sc, sec, userLogin);
                     break;
+                case 3:
+                    alterSession(sc, ses, userLogin);
                 case 0:
                     System.out.println("Voltando...");
                     break;
@@ -206,7 +207,7 @@ public class Interface {
         String descriptionEvent = sc.nextLine();
         System.out.println("Local do Evento: ");
         String locationEvent = sc.nextLine();
-        if (vl.isValidDate(dateEvent)){
+        if (isValidDate(dateEvent)){
             ec.create(nameEvent.trim(), dateEvent, descriptionEvent, locationEvent, userLogin.getData("id"));
         }
     }
@@ -258,13 +259,16 @@ public class Interface {
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do Evento: ");
         String newLocation = sc.nextLine();
-        if (vl.isValidDate(newDate)){
+        if (isValidDate(newDate)){
             ec.update(changed.trim(), newName.trim(), newDate, newDescription, newLocation, userId);
         }
     }
 
     private static void createSubEvent(Scanner sc, Controller ec, Controller sec, Controller userLogin) throws FileNotFoundException {
-        ec.list(userLogin.getData("id"));
+        boolean isNull = ec.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
         System.out.println("Nome do Evento Pai: ");
         String fatherEvent = sc.nextLine();
         System.out.println("Digite o nome do SubEvento: ");
@@ -276,7 +280,7 @@ public class Interface {
         String descriptionSubEvent = sc.nextLine();
         System.out.println("Local do SubEvento: ");
         String locationSubEvent = sc.nextLine();
-        if (vl.isValidDate(dateSubEvent)){
+        if (isValidDate(dateSubEvent)){
             sec.create(fatherEvent.trim(), nameSubEvent.trim(), dateSubEvent, descriptionSubEvent, locationSubEvent, userLogin.getData("id"));
         }
     }
@@ -323,15 +327,92 @@ public class Interface {
         String newName = sc.nextLine();
         System.out.println("Nova Data do SubEvento: ");
         String newDate = sc.nextLine();
-        Validation vl = new Validation();
         System.out.println("Nova Descrição do SubEvento: ");
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do SubEvento: ");
         String newLocation = sc.nextLine();
-        if (vl.isValidDate(newDate)){
+        if (isValidDate(newDate)){
             sec.update(subChanged.trim(), newName.trim(), newDate, newDescription, newLocation, userId);
         }
+    }
 
+    private static void createSession(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) throws FileNotFoundException {
+        boolean isNull = ec.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
+        System.out.println("Nome do Evento Pai: ");
+        String fatherEvent = sc.nextLine();
+        System.out.println("Digite o nome da Sessão: ");
+        String nameSession = sc.nextLine();
+        System.out.println("Data da Sessão: ");
+        String dateSession = sc.nextLine();
+        System.out.println("Descrição da Sessão: ");
+        String descriptionSession = sc.nextLine();
+        System.out.println("Local da Sessão: ");
+        String locationSession = sc.nextLine();
+        System.out.println("Início da Sessão: ");
+        String startTime = sc.nextLine();
+        System.out.println("Término da Sessão: ");
+        String endTime = sc.nextLine();
+        if (isValidDate(dateSession) && areValidTimes(startTime, endTime)){
+            ses.create(fatherEvent.trim(), nameSession.trim(), dateSession, descriptionSession, locationSession, startTime, endTime, userLogin.getData("id"));
+        }
+    }
+
+    private static void alterSession(Scanner sc, Controller ses, Controller userLogin) throws FileNotFoundException {
+        boolean isNull = ses.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
+        int optionSession;
+        do {
+            System.out.println("Selecione uma Sessão: ");
+            String sesChanged = sc.nextLine();
+            printAlterSessionMenu();
+
+            optionSession = getOption(sc);
+            switch (optionSession) {
+                case 1:
+                    ses.delete(sesChanged, "name", userLogin.getData("id"));
+                    optionSession = 0;
+                    break;
+                case 2:
+                    updateSession(sc, ses, sesChanged, userLogin.getData("id"));
+                    optionSession = 0;
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (optionSession != 0);
+    }
+
+    private static void updateSession(Scanner sc, Controller ses, String subChanged, String userId) throws FileNotFoundException {
+        System.out.println("Digite o novo nome da Sessão: ");
+        String newName = sc.nextLine();
+        System.out.println("Nova Data da Sessão: ");
+        String newDate = sc.nextLine();
+        System.out.println("Nova Descrição da Sessão: ");
+        String newDescription = sc.nextLine();
+        System.out.println("Novo Local da Sessão: ");
+        String newLocation = sc.nextLine();
+        System.out.println("Novo Início da Sessão: ");
+        String newStartTime = sc.nextLine();
+        System.out.println("Novo Término da Sessão: ");
+        String newEndTime = sc.nextLine();
+        if (isValidDate(newDate) && areValidTimes(newStartTime, newEndTime)){
+            ses.update(subChanged.trim(), newName.trim(), newDate, newDescription, newLocation, newStartTime, newEndTime, userId);
+        }
+    }
+
+    private static void printAlterSessionMenu() {
+        System.out.println("[1] - Apagar Sessão ");
+        System.out.println("[2] - Alterar Sessão ");
+        System.out.println("[0] - Voltar");
+        System.out.print("Escolha uma opção: ");
     }
 
     public static Object[] login(Scanner sc) {

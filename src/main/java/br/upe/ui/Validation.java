@@ -21,7 +21,7 @@ public class Validation {
         return matcher.matches();
     }
 
-    public boolean isValidDate(String dt) {
+    public static boolean isValidDate(String dt) {
         String[] date = dt.split("/");
 
         if (date.length != 3) {
@@ -47,6 +47,42 @@ public class Validation {
             System.out.println("Erro ao parsear a data: " + e.getMessage());
             return false;
         }
+    }
+
+    public static boolean areValidTimes(String startTime, String endTime) {
+        if (!isValidTime(startTime)) {
+            return false;
+        }
+
+        if (!isValidTime(endTime)) {
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean isValidTime(String hr) {
+        String[] time = hr.split(":");
+
+        if (time.length != 2) {
+            System.out.println("Formato de hora inválido. Use o formato hh:mm.");
+            return false;
+        }
+
+        int hour = Integer.parseInt(time[0]);
+        int minute = Integer.parseInt(time[1]);
+
+        if (hour < 0 || hour > 23) {
+            System.out.println("Horário inválido");
+            return false;
+        }
+
+        if (minute < 0 || minute > 59) {
+            System.out.println("Horário inválido");
+            return false;
+        }
+
+        return true;
+
     }
 }
 
