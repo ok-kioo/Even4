@@ -39,7 +39,7 @@ public class Validation {
 
                 return true;
             } catch (DateTimeParseException e) {
-                System.out.println("Erro ao parsear a data: " + e.getMessage());
+                System.out.println("Erro ao validar data: " + e.getMessage());
                 return false;
             }
         }
