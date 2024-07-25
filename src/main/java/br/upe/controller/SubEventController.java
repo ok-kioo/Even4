@@ -119,6 +119,7 @@ public class SubEventController implements Controller {
 
     @Override
     public boolean list(String ownerId) {
+        this.read();
         boolean isnull = true;
         try {
             boolean found = false;
@@ -141,6 +142,7 @@ public class SubEventController implements Controller {
 
     @Override
     public void show(String id) {
+        this.read();
         for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
             if (!persistence.getData("ownerId").equals(id)){

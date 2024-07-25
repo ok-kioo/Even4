@@ -36,6 +36,7 @@ public class EventController implements Controller {
 
     @Override
     public boolean list(String ownerId){
+        this.read();
         boolean isnull = true;
         try {
             boolean found = false;
@@ -59,6 +60,7 @@ public class EventController implements Controller {
 
     @Override
     public void show(String id) {
+        this.setEventHashMap(eventHashMap);
         for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
             if (!persistence.getData("ownerId").equals(id)){
