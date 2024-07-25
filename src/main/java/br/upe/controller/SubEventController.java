@@ -51,6 +51,7 @@ public class SubEventController implements Controller {
         return data;
     }
 
+
     @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
@@ -141,12 +142,12 @@ public class SubEventController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
         this.read();
         for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (!persistence.getData("ownerId").equals(id)){
-                System.out.println(persistence.getData("name"));
+            if (!persistence.getData("ownerId").equals(params[0])){
+                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
             }
         }
     }

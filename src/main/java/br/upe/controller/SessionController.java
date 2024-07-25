@@ -1,11 +1,13 @@
 package br.upe.controller;
 
+import br.upe.persistence.Event;
 import br.upe.persistence.Session;
 import br.upe.persistence.Persistence;
 import br.upe.persistence.SubEvent;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -68,6 +70,9 @@ public class SessionController implements Controller {
 
         String eventOwnerId = getFatherOwnerId(eventId);
 
+        EventController eventController = new EventController();
+        HashMap<String, Persistence> eventH = eventController.getEventHashMap();
+
         if (!eventOwnerId.equals(userId)) {
             System.out.println("Você não pode criar uma sessão para um evento que você não possui.");
             return;
@@ -88,7 +93,7 @@ public class SessionController implements Controller {
         }
 
         Persistence session = new Session();
-        session.create(eventId, name, date, description, location, startTime, endTime, userId);
+        session.create(eventId, name, date, description, location, startTime, endTime, userId, eventH);
     }
 
     @Override
@@ -140,8 +145,41 @@ public class SessionController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
+        this.read();
+        for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals(params[0])){
+                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
+            }
+        }
 
+        EventController eventController = new EventController();
+        HashMap<String, Persistence> evenH = eventController.getEventHashMap();
+        String eventId = "";
+        for (Map.Entry<String, Persistence> entry : evenH.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (persistence.getData("name").equals((String) params[1])){
+                eventId = persistence.getData("id");
+            }
+        }
+
+        SubEventController subEventController = new SubEventController();
+        HashMap<String, Persistence> subEvenH = subEventController.getEventHashMap();
+        String subEvenId = "";
+        for (Map.Entry<String, Persistence> entry : subEvenH.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (persistence.getData("name").equals((String) params[1])){
+                subEvenId = persistence.getData("id");
+            }
+        }
+
+        for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals((String) params[0]) && (persistence.getData("eventId").equals(eventId) || persistence.getData("eventId").equals(subEvenId))){
+                System.out.println(persistence.getData("name"));
+            }
+        }
     }
 
     @Override

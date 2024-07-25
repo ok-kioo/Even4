@@ -81,7 +81,7 @@ public class Interface {
                     alterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
-                    enterFlow(sc, ec, sec, userLogin);
+                    enterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 4:
                     if (setup(sc, userLogin)) {
@@ -162,7 +162,7 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) {
+    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
         int option;
         do {
             System.out.println("Escolha a opção desejada:");
@@ -177,7 +177,7 @@ public class Interface {
 
                     break;
                 case 2:
-                    EventInscription(sc, ec, userLogin);
+                    EventInscription(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
 
@@ -191,10 +191,32 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void EventInscription(Scanner sc, Controller ec, Controller userLogin) {
+    private static void EventInscription(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
         ec.show(userLogin.getData("id"));
+        sec.show(userLogin.getData("id"));
         System.out.println("Digite o evento que você deseja entrar: ");
         String event = sc.nextLine();
+        enterEvent(sc, event, ses, userLogin);
+    }
+
+    private static void enterEvent(Scanner sc, String event, Controller ses, Controller userLogin) {
+        ses.show(userLogin.getData("id"), event);
+        int option;
+        do {
+            System.out.println("[1] - Entrar no evento");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+            switch (option) {
+                case 1:
+
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+            }
+        } while (option != 0);
+
+
     }
 
     private static void createEvent(Scanner sc, Controller ec, Controller userLogin) throws FileNotFoundException {
