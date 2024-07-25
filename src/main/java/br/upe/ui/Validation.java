@@ -22,31 +22,29 @@ public class Validation {
     }
 
     public static boolean isValidDate(String dt) {
-        String[] date = dt.split("/");
+        String dateRegex = "^([0-2]\\d|3[01])/(0\\d|1[0-2])/\\d{4}$";
+        Pattern pattern = Pattern.compile(dateRegex);
+        Matcher matcher = pattern.matcher(dt);
 
-        if (date.length != 3) {
-            System.out.println("Formato de data inválido. Use o formato dd/MM/yyyy.");
-            return false;
-        }
+        if (matcher.matches()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            try {
+                LocalDate dateValidate = LocalDate.parse(dt, formatter);
+                LocalDate dateNow = LocalDate.now();
 
-        int day = Integer.parseInt(date[0]);
-        int month = Integer.parseInt(date[1]);
-        int year = Integer.parseInt(date[2]);
+                if (dateValidate.isBefore(dateNow)) {
+                    System.out.println("A data '" + dt + "' é anterior à data de hoje.");
+                    return false;
+                }
 
-        try {
-            LocalDate dateValidate = LocalDate.of(year, month, day);
-            LocalDate dateNow = LocalDate.now();
-
-            if (dateValidate.isBefore(dateNow)) {
-                System.out.println("A data '" + dt + "' é anterior à data de hoje.");
+                return true;
+            } catch (DateTimeParseException e) {
+                System.out.println("Erro ao validar data: " + e.getMessage());
                 return false;
             }
-
-            return true;
-        } catch (DateTimeParseException | NumberFormatException e) {
-            System.out.println("Erro ao parsear a data: " + e.getMessage());
-            return false;
         }
+        System.out.println("Formato de data inválido. Use o formato dd/MM/yyyy.");
+        return false;
     }
 
     public static boolean areValidTimes(String startTime, String endTime) {
@@ -61,28 +59,28 @@ public class Validation {
     }
 
     public static boolean isValidTime(String hr) {
-        String[] time = hr.split(":");
+        String timeRegex = "^([01]\\d|2[0-3]):([0-5]\\d)$";
+        Pattern pattern = Pattern.compile(timeRegex);
+        Matcher matcher = pattern.matcher(hr);
+        if (matcher.matches()) {
+            String[] time = hr.split(":");
 
-        if (time.length != 2) {
-            System.out.println("Formato de hora inválido. Use o formato hh:mm.");
-            return false;
+            int hour = Integer.parseInt(time[0]);
+            int minute = Integer.parseInt(time[1]);
+
+            if (hour < 0 || hour > 23) {
+                System.out.println("Horário inválido");
+                return false;
+            }
+
+            if (minute < 0 || minute > 59) {
+                System.out.println("Horário inválido");
+                return false;
+            }
+            return true;
         }
-
-        int hour = Integer.parseInt(time[0]);
-        int minute = Integer.parseInt(time[1]);
-
-        if (hour < 0 || hour > 23) {
-            System.out.println("Horário inválido");
-            return false;
-        }
-
-        if (minute < 0 || minute > 59) {
-            System.out.println("Horário inválido");
-            return false;
-        }
-
-        return true;
-
+    System.out.println("Formato de hora inválido. Use o formato hh:mm.");
+    return false;
     }
 }
 

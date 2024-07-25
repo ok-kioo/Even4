@@ -51,6 +51,12 @@ public class SubEventController implements Controller {
         return data;
     }
 
+
+    @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
     @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
@@ -83,6 +89,10 @@ public class SubEventController implements Controller {
 
         if (nomeEmUso || name.isEmpty()) {
             System.out.println("Nome vazio ou em uso");
+            return;
+        }
+
+        if (!validateEventDate(date, eventId)){
             return;
         }
 
@@ -119,6 +129,7 @@ public class SubEventController implements Controller {
 
     @Override
     public boolean list(String ownerId) {
+        this.read();
         boolean isnull = true;
         try {
             boolean found = false;
@@ -140,11 +151,12 @@ public class SubEventController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
+        this.read();
         for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (!persistence.getData("ownerId").equals(id)){
-                System.out.println(persistence.getData("name"));
+            if (!persistence.getData("ownerId").equals(params[0])){
+                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
             }
         }
     }
@@ -183,14 +195,14 @@ public class SubEventController implements Controller {
             for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
                 Persistence subEvent = entry.getValue();
                 String name = subEvent.getData("name");
-                if (name != null && name.equals(newName)) {
+                if (name.isEmpty() || name.equals(newName)) {
                     nameExists = true;
                     break;
                 }
             }
 
             if (nameExists) {
-                System.out.println("Nome em uso");
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
 
@@ -261,4 +273,23 @@ public class SubEventController implements Controller {
         return fatherOwnerId;
     }
 
+    private boolean validateEventDate(String date, String searchId) {
+        EventController ec = new EventController();
+        HashMap<String, Persistence> list = ec.getEventHashMap();
+
+        Persistence listIndice = list.get(searchId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate eventDate;
+        eventDate = LocalDate.parse(listIndice.getData("date"), formatter);
+
+        LocalDate inputDate;
+        inputDate = LocalDate.parse(date, formatter);
+        if (eventDate.isAfter(inputDate)) {
+            System.out.println("A data não pode ser anterior ao seu Evento Pai\n");
+            return false;
+        }
+
+        return true;
+    }
 }

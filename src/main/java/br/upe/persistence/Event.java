@@ -2,6 +2,7 @@ package br.upe.persistence;
 import java.io.*;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ public class Event implements Persistence {
     private String description;
     private String location;
     private String ownerId;
+    private ArrayList<Persistence> sessionsList;
 
     public String getIdOwner() {
         return ownerId;
@@ -72,6 +74,21 @@ public class Event implements Persistence {
         this.location = location;
     }
 
+    public ArrayList<Persistence> getSessionsList() {
+        return sessionsList;
+    }
+
+    public void setSessionsList(ArrayList<Persistence> sessionsList) {
+        this.sessionsList = sessionsList;
+    }
+
+    public int getSessionListLSize() {
+        if (sessionsList != null) {
+            return this.sessionsList.size();
+        }
+        return 0;
+    }
+
     @Override
     public String getData(String dataToGet) {
         String data = "";
@@ -83,6 +100,7 @@ public class Event implements Persistence {
                 case "description" -> data = this.getDescription();
                 case "location" -> data = this.getLocation();
                 case "ownerId" -> data = this.getIdOwner();
+                case "listSize" -> data = String.valueOf(this.getSessionListLSize());
                 default -> throw new IOException();
             }
         } catch (IOException e) {
