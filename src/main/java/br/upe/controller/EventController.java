@@ -103,14 +103,14 @@ public class EventController implements Controller {
             for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
                 Persistence subEvent = entry.getValue();
                 String name = subEvent.getData("name");
-                if (name != null && name.equals(newName)) {
+                if (name.isEmpty() || name.equals(newName)) {
                     nameExists = true;
                     break;
                 }
             }
 
             if (nameExists) {
-                System.out.println("Nome em uso");
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
 
@@ -169,8 +169,8 @@ public class EventController implements Controller {
 
         for (Map.Entry<String, Persistence> entry : this.eventHashMap.entrySet()) {
             Persistence event = entry.getValue();
-            if (event.getData("name").equals(name)) {
-                System.out.println("Nome em uso");
+            if (event.getData("name").equals(name) || name.isEmpty()) {
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
         }

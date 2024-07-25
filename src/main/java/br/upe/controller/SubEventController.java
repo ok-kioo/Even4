@@ -185,14 +185,14 @@ public class SubEventController implements Controller {
             for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
                 Persistence subEvent = entry.getValue();
                 String name = subEvent.getData("name");
-                if (name != null && name.equals(newName)) {
+                if (name.isEmpty() || name.equals(newName)) {
                     nameExists = true;
                     break;
                 }
             }
 
             if (nameExists) {
-                System.out.println("Nome em uso");
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
 
