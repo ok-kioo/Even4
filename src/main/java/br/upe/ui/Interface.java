@@ -103,7 +103,7 @@ public class Interface {
     private static void printUserMenu() {
         System.out.println("[1] - Criar");
         System.out.println("[2] - Alterar");
-        System.out.println("[3] - Entrar em um Evento");
+        System.out.println("[3] - Acessar Evento");
         System.out.println("[4] - Perfil");
         System.out.println("[0] - Voltar");
         System.out.print("Escolha uma opção: ");
@@ -162,8 +162,36 @@ public class Interface {
     }
 
     private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller userLogin) {
+        int option;
+        do {
+            System.out.println("Escolha a opção desejada:");
+            System.out.println("[1] - Listar Inscrições");
+            System.out.println("[2] - Inscrever-se");
+            System.out.println("[3] - Submeter Artigo");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+
+            switch (option) {
+                case 1:
+
+                    break;
+                case 2:
+                    EventInscription(sc, ec, userLogin);
+                    break;
+                case 3:
+
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (option != 0);
+    }
+
+    private static void EventInscription(Scanner sc, Controller ec, Controller userLogin) {
         ec.show(userLogin.getData("id"));
-        sec.show(userLogin.getData("id"));
         System.out.println("Digite o evento que você deseja entrar: ");
         String event = sc.nextLine();
     }

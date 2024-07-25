@@ -62,7 +62,7 @@ public class EventController implements Controller {
         for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
             if (!persistence.getData("ownerId").equals(id)){
-                System.out.println(persistence.getData("name"));
+                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
             }
         }
     }
