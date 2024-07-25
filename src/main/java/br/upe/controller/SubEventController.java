@@ -87,6 +87,10 @@ public class SubEventController implements Controller {
             return;
         }
 
+        if (!validateEventDate(date, eventId)){
+            return;
+        }
+
         Persistence subEvent = new SubEvent();
         subEvent.create(eventId, name, date, description, location, userId);
     }
@@ -264,4 +268,23 @@ public class SubEventController implements Controller {
         return fatherOwnerId;
     }
 
+    private boolean validateEventDate(String date, String searchId) {
+        EventController ec = new EventController();
+        HashMap<String, Persistence> list = ec.getEventHashMap();
+
+        Persistence listIndice = list.get(searchId);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDate eventDate;
+        eventDate = LocalDate.parse(listIndice.getData("date"), formatter);
+
+        LocalDate inputDate;
+        inputDate = LocalDate.parse(date, formatter);
+        if (eventDate.isAfter(inputDate)) {
+            System.out.println("A data não pode ser anterior ao seu Evento Pai\n");
+            return false;
+        }
+
+        return true;
+    }
 }
