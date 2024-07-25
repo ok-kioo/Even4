@@ -202,7 +202,6 @@ public class Interface {
         String nameEvent = sc.nextLine();
         System.out.println("Data do Evento: ");
         String dateEvent = sc.nextLine();
-        Validation vl = new Validation();
         System.out.println("Descrição do Evento: ");
         String descriptionEvent = sc.nextLine();
         System.out.println("Local do Evento: ");
@@ -254,7 +253,6 @@ public class Interface {
         String newName = sc.nextLine();
         System.out.println("Nova Data do Evento: ");
         String newDate = sc.nextLine();
-        Validation vl = new Validation();
         System.out.println("Nova Descrição do Evento: ");
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do Evento: ");
@@ -275,7 +273,6 @@ public class Interface {
         String nameSubEvent = sc.nextLine();
         System.out.println("Data do SubEvento: ");
         String dateSubEvent = sc.nextLine();
-        Validation vl = new Validation();
         System.out.println("Descrição do SubEvento: ");
         String descriptionSubEvent = sc.nextLine();
         System.out.println("Local do SubEvento: ");
