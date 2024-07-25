@@ -10,7 +10,7 @@ public interface Controller {
     void read();
     void delete(Object... params);
     boolean list(String idowner);
-
+    void show(String id);
     boolean loginValidate(String email, String cpf);
     String getData(String dataToGet);
 

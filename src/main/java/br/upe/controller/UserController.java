@@ -42,7 +42,7 @@ public class UserController implements Controller {
         return data;
     }
 
-    private void setUserLog(Persistence userLog) {
+    public void setUserLog(Persistence userLog) {
         this.userLog = userLog;
     }
 
@@ -115,6 +115,11 @@ public class UserController implements Controller {
     @Override
     public boolean list(String idowner) {
         return false;
+    }
+
+    @Override
+    public void show(String id) {
+
     }
 
 

@@ -139,6 +139,11 @@ public class SessionController implements Controller {
     }
 
     @Override
+    public void show(String id) {
+
+    }
+
+    @Override
     public void update(Object... params) {
         if (params.length != 9) {
             System.out.println("Número incorreto de parâmetros. Esperado: 9");

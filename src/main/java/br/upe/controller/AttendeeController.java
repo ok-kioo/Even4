@@ -1,27 +1,22 @@
 package br.upe.controller;
+import br.upe.persistence.Attendee;
 import br.upe.persistence.Event;
 import br.upe.persistence.Persistence;
 import br.upe.persistence.SubEvent;
-import br.upe.persistence.User;
 
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
-public class EventController implements Controller {
+public class AttendeeController implements Controller {
     private HashMap<String, Persistence> eventHashMap;
     private Persistence EventLog;
 
 
-    public EventController() {
+    public void AttendeeController() {
         this.read();
     }
 
@@ -69,7 +64,7 @@ public class EventController implements Controller {
 
     @Override
     public void update(Object... params) throws FileNotFoundException {
-        if (params.length != 6) {
+        if (params.length != 2) {
             System.out.println("Só pode ter 6 parametros");
             return;
         }
@@ -140,7 +135,6 @@ public class EventController implements Controller {
         this.eventHashMap = eventPersistence.read();
     }
 
-
     @Override
     public boolean loginValidate(String email, String cpf) {
         return false;
@@ -153,30 +147,26 @@ public class EventController implements Controller {
     }
 
     @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
+    @Override
     public void create(Object... params) {
-        if (params.length != 5) {
-            System.out.println("Só pode ter 5 parâmetros");
+        if (params.length != 2) {
+            System.out.println("Só pode ter 2 parâmetros");
             return;
         }
 
         String name = (String) params[0];
-        String date = (String) params[1];
-        String description = (String) params[2];
-        String location = (String) params[3];
-        String idOwner = (String) params[4];
+        String userId = (String) params[1];
+        String sessionId = (String) params[2];
 
-        for (Map.Entry<String, Persistence> entry : this.eventHashMap.entrySet()) {
-            Persistence event = entry.getValue();
-            if (event.getData("name").equals(name)) {
-                System.out.println("Nome em uso");
-                return;
-            }
-        }
-
-        Persistence event = new Event();
-        event.create(name, date, description, location, idOwner);
+        Persistence attendee = new Attendee();
+        attendee.create(userId, userId, sessionId);
 
     }
+
 
     @Override
     public void delete(Object... params) {
@@ -203,5 +193,47 @@ public class EventController implements Controller {
             System.out.println("Você não pode deletar esse evento");
         }
     }
+    private String getSessionId(String searchId) {
+        AttendeeController ac = new AttendeeController() {
+            @Override
+            public void SubmitArticleController(String string) {
 
+            }
+        };
+        String sessionId = "";
+        HashMap<String, Persistence> list = ac.getEventHashMap();
+        boolean found = false;
+        for (Map.Entry<String, Persistence> entry : list.entrySet()) {
+            Persistence listIndice = entry.getValue();
+            if (listIndice.getData("name").equals(searchId)) {
+                sessionId = listIndice.getData("id");
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            System.out.println("Participante não encontrado\n");
+        }
+
+        return sessionId;
+    }
+
+    private String getFatherOwnerId(String eventId) {
+        AttendeeController ac = new AttendeeController() {
+            @Override
+            public void SubmitArticleController(String string) {
+
+            }
+        };
+        String fatherOwnerId = "";
+        HashMap<String, Persistence> list = ac.getEventHashMap();
+        for (Map.Entry<String, Persistence> entry : list.entrySet()) {
+            Persistence listIndice = entry.getValue();
+            if (listIndice.getData("id").equals(eventId)) {
+                fatherOwnerId = listIndice.getData("ownerId");
+                break;
+            }
+        }
+        return fatherOwnerId;
+    }
 }

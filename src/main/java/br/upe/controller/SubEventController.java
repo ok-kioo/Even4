@@ -7,6 +7,8 @@ import br.upe.persistence.Persistence;
 import br.upe.persistence.User;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,7 +54,7 @@ public class SubEventController implements Controller {
     @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
-            System.out.println("Só pode ter 6 parametros");
+            System.out.println("Só pode ter 6 parâmetros");
             return;
         }
 
@@ -70,24 +72,24 @@ public class SubEventController implements Controller {
             return;
         }
 
-        try {
-            for (Map.Entry<String, Persistence> entry : this.subEventHashMap.entrySet()) {
-                Persistence subEventindice = entry.getValue();
-                if (subEventindice.getData("name").equals(name) || name.isEmpty()) {
-                    throw new IOException();
-                }
+        boolean nomeEmUso = false;
+        for (Map.Entry<String, Persistence> entry : this.subEventHashMap.entrySet()) {
+            Persistence subEvent = entry.getValue();
+            if (subEvent.getData("name").equals(name)) {
+                nomeEmUso = true;
+                break; //
             }
-
-            if (isValidDate(date)) {
-                Persistence subEvent = new SubEvent();
-                subEvent.create(eventId, name, date, description, location, userId);
-            } else {
-                throw new IllegalArgumentException("Data inválida: " + date);
-            }
-        } catch (IOException exception) {
-            System.out.println("Nome vazio ou em uso\n");
         }
+
+        if (nomeEmUso || name.isEmpty()) {
+            System.out.println("Nome vazio ou em uso");
+            return;
+        }
+
+        Persistence subEvent = new SubEvent();
+        subEvent.create(eventId, name, date, description, location, userId);
     }
+
 
     @Override
     public void delete(Object... params) {
@@ -138,47 +140,76 @@ public class SubEventController implements Controller {
     }
 
     @Override
+    public void show(String id) {
+        for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals(id)){
+                System.out.println(persistence.getData("name"));
+            }
+        }
+    }
+
+    @Override
     public void update(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
             System.out.println("Só pode ter 6 parametros");
+            return;
         }
 
-        Persistence subEventPersistence = new SubEvent();
-        String name = (String) params[1];
-        String date = (String) params[2];
-        String description = (String) params[3];
-        String location = (String) params[4];
+        String oldName = (String) params[0];
+        String newName = (String) params[1];
+        String newDate = (String) params[2];
+        String newDescription = (String) params[3];
+        String newLocation = (String) params[4];
         String userId = (String) params[5];
-        String id = "";
-        String ownerId = "";
+
+        boolean isOwner = false;
+        String id = null;
+
         for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (persistence.getData("name").equals((String) params[0])) {
+            String name = persistence.getData("name");
+            String ownerId = persistence.getData("ownerId");
+
+            if (name != null && name.equals(oldName) && ownerId != null && ownerId.equals(userId)) {
+                isOwner = true;
                 id = persistence.getData("id");
-                ownerId = persistence.getData("ownerId");
+                break;
             }
         }
 
-        if (ownerId.equals(userId)) {
-            Persistence newSubEvent = subEventHashMap.get(id);
-
-            if (newSubEvent == null) {
-                System.out.println("SubEvento não encontrado");
-                return;
-            }
-
+        if (isOwner) {
+            boolean nameExists = false;
             for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
-                Persistence subEventindice = entry.getValue();
-                if (subEventindice.getData("name").equals((String) params[0])) {
-                    newSubEvent.setData("name", name);
-                    newSubEvent.setData("date", date);
-                    newSubEvent.setData("description", description);
-                    newSubEvent.setData("location", location);
-                    subEventHashMap.put(id, newSubEvent);
+                Persistence subEvent = entry.getValue();
+                String name = subEvent.getData("name");
+                if (name != null && name.equals(newName)) {
+                    nameExists = true;
+                    break;
                 }
             }
 
-            subEventPersistence.update(subEventHashMap);
+            if (nameExists) {
+                System.out.println("Nome em uso");
+                return;
+            }
+
+            if (id != null) {
+                Persistence newSubEvent = subEventHashMap.get(id);
+                if (newSubEvent != null) {
+                    newSubEvent.setData("name", newName);
+                    newSubEvent.setData("date", newDate);
+                    newSubEvent.setData("description", newDescription);
+                    newSubEvent.setData("location", newLocation);
+                    subEventHashMap.put(id, newSubEvent);
+                    Persistence subEventPersistence = new SubEvent();
+                    subEventPersistence.update(subEventHashMap);
+                } else {
+                    System.out.println("SubEvento não encontrado");
+                }
+            } else {
+                System.out.println("Você não pode alterar este SubEvento");
+            }
         } else {
             System.out.println("Você não pode alterar este SubEvento");
         }
@@ -193,13 +224,6 @@ public class SubEventController implements Controller {
     @Override
     public boolean loginValidate(String email, String cpf) {
         return false;
-    }
-
-    private boolean isValidDate(String dateString) {
-        String regex = "^\\d{2}[^\\d]\\d{2}[^\\d]\\d{4}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(dateString);
-        return matcher.matches();
     }
 
     private String getFatherEventId(String searchId) throws FileNotFoundException {
@@ -217,6 +241,7 @@ public class SubEventController implements Controller {
         }
         if (!found){
             System.out.println("Evento pai não encontrado\n");
+
         }
 
         return fatherId;
