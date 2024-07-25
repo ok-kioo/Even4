@@ -1,9 +1,13 @@
 package br.upe.controller;
 
+import br.upe.persistence.Event;
 import br.upe.persistence.Session;
 import br.upe.persistence.Persistence;
+import br.upe.persistence.SubEvent;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -66,28 +70,30 @@ public class SessionController implements Controller {
 
         String eventOwnerId = getFatherOwnerId(eventId);
 
+        EventController eventController = new EventController();
+        HashMap<String, Persistence> eventH = eventController.getEventHashMap();
+
         if (!eventOwnerId.equals(userId)) {
             System.out.println("Você não pode criar uma sessão para um evento que você não possui.");
             return;
         }
 
-        try {
-            for (Map.Entry<String, Persistence> entry : this.sessionHashMap.entrySet()) {
-                Persistence sessionIndice = entry.getValue();
-                if (sessionIndice.getData("name").equals(name) || name.isEmpty()) {
-                    throw new IOException();
+        boolean nomeEmUso = false;
+        for (Map.Entry<String, Persistence> entry : this.sessionHashMap.entrySet()) {
+            Persistence sessionIndice = entry.getValue();
+            if (sessionIndice.getData("name").equals(name) || name.isEmpty()) {
+                nomeEmUso = true;
+                break;
                 }
             }
 
-            if (isValidDate(date) && isValidTime(startTime) && isValidTime(endTime)) {
-                Persistence session = new Session();
-                session.create(eventId, name, date, description, location, startTime, endTime, userId);
-            } else {
-                throw new IllegalArgumentException("Data ou horário inválido");
-            }
-        } catch (IOException exception) {
-            System.out.println("Nome vazio ou em uso\n");
+        if (nomeEmUso || name.isEmpty()) {
+            System.out.println("Nome vazio ou em uso");
+            return;
         }
+
+        Persistence session = new Session();
+        session.create(eventId, name, date, description, location, startTime, endTime, userId, eventH);
     }
 
     @Override
@@ -139,57 +145,104 @@ public class SessionController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
+        this.read();
+        for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals(params[0])){
+                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
+            }
+        }
 
+        EventController eventController = new EventController();
+        HashMap<String, Persistence> evenH = eventController.getEventHashMap();
+        String eventId = "";
+        for (Map.Entry<String, Persistence> entry : evenH.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (persistence.getData("name").equals((String) params[1])){
+                eventId = persistence.getData("id");
+            }
+        }
+
+        SubEventController subEventController = new SubEventController();
+        HashMap<String, Persistence> subEvenH = subEventController.getEventHashMap();
+        String subEvenId = "";
+        for (Map.Entry<String, Persistence> entry : subEvenH.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (persistence.getData("name").equals((String) params[1])){
+                subEvenId = persistence.getData("id");
+            }
+        }
+
+        for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
+            Persistence persistence = entry.getValue();
+            if (!persistence.getData("ownerId").equals((String) params[0]) && (persistence.getData("eventId").equals(eventId) || persistence.getData("eventId").equals(subEvenId))){
+                System.out.println(persistence.getData("name"));
+            }
+        }
     }
 
     @Override
-    public void update(Object... params) {
-        if (params.length != 9) {
-            System.out.println("Número incorreto de parâmetros. Esperado: 9");
+    public void update(Object... params) throws FileNotFoundException {
+        if (params.length != 6) {
+            System.out.println("Só pode ter 6 parametros");
             return;
         }
 
-        Persistence sessionPersistence = new Session();
-        String name = (String) params[1];
-        String date = (String) params[2];
-        String description = (String) params[3];
-        String location = (String) params[4];
-        String startTime = (String) params[5];
-        String endTime = (String) params[6];
-        String userId = (String) params[8];
-        String id = "";
-        String ownerId = "";
+        String oldName = (String) params[0];
+        String newName = (String) params[1];
+        String newDate = (String) params[2];
+        String newDescription = (String) params[3];
+        String newLocation = (String) params[4];
+        String userId = (String) params[5];
+
+        boolean isOwner = false;
+        String id = null;
+
         for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (persistence.getData("name").equals((String) params[0])) {
+            String name = persistence.getData("name");
+            String ownerId = persistence.getData("ownerId");
+
+            if (name != null && name.equals(oldName) && ownerId != null && ownerId.equals(userId)) {
+                isOwner = true;
                 id = persistence.getData("id");
-                ownerId = persistence.getData("ownerId");
+                break;
             }
         }
 
-        if (ownerId.equals(userId)) {
-            Persistence newSession = sessionHashMap.get(id);
-
-            if (newSession == null) {
-                System.out.println("Sessão não encontrada");
-                return;
-            }
-
+        if (isOwner) {
+            boolean nameExists = false;
             for (Map.Entry<String, Persistence> entry : sessionHashMap.entrySet()) {
-                Persistence sessionIndice = entry.getValue();
-                if (sessionIndice.getData("name").equals((String) params[0])) {
-                    newSession.setData("name", name);
-                    newSession.setData("date", date);
-                    newSession.setData("description", description);
-                    newSession.setData("location", location);
-                    newSession.setData("startTime", startTime);
-                    newSession.setData("endTime", endTime);
-                    sessionHashMap.put(id, newSession);
+                Persistence Session = entry.getValue();
+                String name = Session.getData("name");
+                if (name.isEmpty() || name.equals(newName)) {
+                    nameExists = true;
+                    break;
                 }
             }
 
-            sessionPersistence.update(sessionHashMap);
+            if (nameExists) {
+                System.out.println("Nome em uso ou vazio");
+                return;
+            }
+
+            if (id != null) {
+                Persistence newSession = sessionHashMap.get(id);
+                if (newSession != null) {
+                    newSession.setData("name", newName);
+                    newSession.setData("date", newDate);
+                    newSession.setData("description", newDescription);
+                    newSession.setData("location", newLocation);
+                    sessionHashMap.put(id, newSession);
+                    Persistence SessionPersistence = new Session();
+                    SessionPersistence.update(sessionHashMap);
+                } else {
+                    System.out.println("Sessão não encontrada");
+                }
+            } else {
+                System.out.println("Você não pode alterar esta Sessão");
+            }
         } else {
             System.out.println("Você não pode alterar esta Sessão");
         }
@@ -204,20 +257,6 @@ public class SessionController implements Controller {
     @Override
     public boolean loginValidate(String email, String cpf) {
         return false;
-    }
-
-    private boolean isValidDate(String dateString) {
-        String regex = "^\\d{2}[^\\d]\\d{2}[^\\d]\\d{4}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(dateString);
-        return matcher.matches();
-    }
-
-    private boolean isValidTime(String timeString) {
-        String regex = "^\\d{2}:\\d{2}$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(timeString);
-        return matcher.matches();
     }
 
     private String getFatherEventId(String searchId) {

@@ -1,8 +1,11 @@
 package br.upe.persistence;
 
+import br.upe.controller.EventController;
+
 import java.io.*;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -140,8 +143,9 @@ public class Session implements Persistence {
     }
 
     public void create(Object... params) {
-        if (params.length < 8) {
-            System.out.println("Só pode ter 8 parametros");
+        if (params.length < 9) {
+            System.out.println("Só pode ter 9 parâmetros");
+            return; // Adicionando return para sair da função se o número de parâmetros estiver incorreto
         }
 
         String eventId = (String) params[0];
@@ -153,6 +157,7 @@ public class Session implements Persistence {
         String startTime = (String) params[5];
         String endTime = (String) params[6];
         String ownerId = (String) params[7];
+        HashMap<String, Persistence> eventH = (HashMap<String, Persistence>) params[8];
         String line = id + ";" + name + ";" + date + ";" + description + ";" + location + ";" + startTime + ";" + endTime + ";" + eventId + ";" + ownerId;
 
         try {
@@ -167,12 +172,51 @@ public class Session implements Persistence {
                 writer.newLine();
             }
 
-            System.out.println("Sessão Criada");
+            Event event = null;
+            for (Map.Entry<String, Persistence> entry : eventH.entrySet()) {
+                Persistence eventPersistence = entry.getValue();
+                if (eventPersistence.getData("id").equals(eventId)) {
+                    event = (Event) eventPersistence;
+                    break;
+                }
+            }
+
+            if (event == null) {
+                System.out.println("Evento não encontrado.");
+                return;
+            }
+
+            ArrayList<Persistence> sessionList = event.getSessionsList();
+            if (sessionList == null) {
+                sessionList = new ArrayList<>(); // Inicialize a lista se estiver nula
+            }
+
+            Session session = new Session();
+            System.out.println("IdEvent " + event.getId());
+            session.setId(id);
+            session.setName(name);
+            session.setDate(date);
+            session.setDescription(description);
+            session.setLocation(location);
+            session.setStartTime(startTime);
+            session.setEndTime(endTime);
+            session.setOwnerId(ownerId);
+            sessionList.add(session);
+            System.out.println("Sessão Criada: " + session.getId());
+
+            // Se necessário, atualizar o evento com a nova lista de sessões
+            event.setSessionsList(sessionList);
+
+            eventH.put(eventId, event);
+
+            System.out.println("Sessões atuais: " + sessionList.size());
+
         } catch (IOException writerEx) {
             System.out.println("Erro na escrita do arquivo");
             writerEx.printStackTrace();
         }
     }
+
 
     @Override
     public HashMap<String, Persistence> read() {

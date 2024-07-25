@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class EventController implements Controller {
 
     @Override
     public boolean list(String ownerId){
+        this.read();
         boolean isnull = true;
         try {
             boolean found = false;
@@ -57,15 +59,21 @@ public class EventController implements Controller {
         return isnull;
     }
 
-    @Override
-    public void show(String id) {
+    public void show(Object... params) {
+        this.setEventHashMap(eventHashMap);
+
         for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
-            if (!persistence.getData("ownerId").equals(id)){
+            String ownerId = persistence.getData("ownerId");
+            int sessionListSize = Integer.parseInt(persistence.getData("listSize"));
+            // Verifica se o evento não é de propriedade do usuário e se possui sessões
+            if (!ownerId.equals(params[0])) {
                 System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
             }
         }
     }
+
+
 
     @Override
     public void update(Object... params) throws FileNotFoundException {
@@ -99,37 +107,37 @@ public class EventController implements Controller {
         if (isOwner) {
             boolean nameExists = false;
             for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
-                Persistence subEvent = entry.getValue();
-                String name = subEvent.getData("name");
-                if (name != null && name.equals(newName)) {
+                Persistence event = entry.getValue();
+                String name = event.getData("name");
+                if (name.isEmpty() || name.equals(newName)) {
                     nameExists = true;
                     break;
                 }
             }
 
             if (nameExists) {
-                System.out.println("Nome em uso");
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
 
             if (id != null) {
-                Persistence newSubEvent = eventHashMap.get(id);
-                if (newSubEvent != null) {
-                    newSubEvent.setData("name", newName);
-                    newSubEvent.setData("date", newDate);
-                    newSubEvent.setData("description", newDescription);
-                    newSubEvent.setData("location", newLocation);
-                    eventHashMap.put(id, newSubEvent);
-                    Persistence subEventPersistence = new SubEvent();
-                    subEventPersistence.update(eventHashMap);
+                Persistence newEvent = eventHashMap.get(id);
+                if (newEvent != null) {
+                    newEvent.setData("name", newName);
+                    newEvent.setData("date", newDate);
+                    newEvent.setData("description", newDescription);
+                    newEvent.setData("location", newLocation);
+                    eventHashMap.put(id, newEvent);
+                    Persistence eventPersistence = new Event();
+                    eventPersistence.update(eventHashMap);
                 } else {
-                    System.out.println("SubEvento não encontrado");
+                    System.out.println("Evento não encontrado");
                 }
             } else {
-                System.out.println("Você não pode alterar este SubEvento");
+                System.out.println("Você não pode alterar este Evento");
             }
         } else {
-            System.out.println("Você não pode alterar este SubEvento");
+            System.out.println("Você não pode alterar este Evento");
         }
     }
 
@@ -152,6 +160,8 @@ public class EventController implements Controller {
         return null;
     }
 
+
+
     @Override
     public void create(Object... params) {
         if (params.length != 5) {
@@ -167,8 +177,8 @@ public class EventController implements Controller {
 
         for (Map.Entry<String, Persistence> entry : this.eventHashMap.entrySet()) {
             Persistence event = entry.getValue();
-            if (event.getData("name").equals(name)) {
-                System.out.println("Nome em uso");
+            if (event.getData("name").equals(name) || name.isEmpty()) {
+                System.out.println("Nome em uso ou vazio");
                 return;
             }
         }

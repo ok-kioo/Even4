@@ -42,6 +42,7 @@ public class UserController implements Controller {
         return data;
     }
 
+
     public void setUserLog(Persistence userLog) {
         this.userLog = userLog;
     }
@@ -118,10 +119,9 @@ public class UserController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
 
     }
-
 
     public boolean loginValidate(String email, String cpf) {
         for (Map.Entry<String, Persistence> entry : this.userHashMap.entrySet()) {
