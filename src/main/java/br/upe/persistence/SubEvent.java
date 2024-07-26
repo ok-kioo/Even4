@@ -186,6 +186,11 @@ public class SubEvent extends Event implements Persistence{
         return list;
     }
 
+    @Override
+    public HashMap<String, Persistence> read(Object... params) {
+        return null;
+    }
+
     public void update(Object... params) {
         if (params.length > 1) {
             System.out.println("Só pode ter 1 parametro");

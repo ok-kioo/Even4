@@ -194,6 +194,11 @@ public class Event implements Persistence {
     }
 
     @Override
+    public HashMap<String, Persistence> read(Object... params) {
+        return null;
+    }
+
+    @Override
     public void update(Object... params) {
         if (params.length > 1) {
             System.out.println("Só pode ter 1 parametro");

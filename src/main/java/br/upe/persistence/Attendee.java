@@ -190,4 +190,9 @@ public class Attendee implements Persistence{
         }
         return list;
     }
+
+    @Override
+    public HashMap<String, Persistence> read(Object... params) {
+        return null;
+    }
 }

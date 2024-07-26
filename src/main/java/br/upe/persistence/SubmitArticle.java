@@ -1,110 +1,69 @@
 package br.upe.persistence;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.io.*;
 import java.util.HashMap;
 
 public class SubmitArticle implements Persistence {
-
-    private final String baseDir = "C:\\Users\\deyvi\\even4\\db\\Articles";
-
-    private String eventDir;
-
-    public SubmitArticle(String eventName) {
-        // Define o diretório do evento
-        this.eventDir = Paths.get(baseDir+"\\"+eventName).toString();
-    }
-
-    public void create(Object... params) {
-        if (params.length != 2) {
-            throw new IllegalArgumentException("Número inválido de parâmetros. Esperado: 2 (caminho do arquivo e nome do evento).");
-        }
-        String sourcePath = (String) params[0];
-        String eventName = (String) params[1];
-
-        // Atualiza o diretório do evento
-        this.eventDir = Paths.get(baseDir, eventName).toString();
-
-        // Verifica se o diretório do evento existe, se não cria
-        File directory = new File(eventDir);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
-        Path source = Paths.get(sourcePath);
-        Path destination = Paths.get(eventDir, source.getFileName().toString());
-
-        try {
-            Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Artigo criado com sucesso.");
-        } catch (IOException e) {
-            System.out.println("Erro ao criar artigo: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void delete(Object... params) {
-        if (params.length != 2) {
-            throw new IllegalArgumentException("Número inválido de parâmetros.");
-        }
-        String articleName = (String) params[0];
-        String eventName = (String) params[1];
-        Path articlePath = Paths.get(baseDir, eventName, articleName);
-
-        try {
-            if (Files.exists(articlePath)) {
-                Files.delete(articlePath);
-                System.out.println("Artigo deletado com sucesso.");
-            } else {
-                System.out.println("Artigo não encontrado.");
-            }
-        } catch (IOException e) {
-            System.out.println("Erro ao deletar artigo: " + e.getMessage());
-        }
-    }
-
-    @Override
-    public void update(Object... params) {
-        if (params.length != 3) {
-            throw new IllegalArgumentException("Número inválido de parâmetros.");
-        }
-        String oldArticleName = (String) params[0];
-        String newSourcePath = (String) params[1];
-        String eventName = (String) params[2];
-        Path oldArticlePath = Paths.get(baseDir, eventName, oldArticleName);
-        Path newSource = Paths.get(newSourcePath);
-        Path newArticlePath = Paths.get(baseDir, eventName, newSource.getFileName().toString());
-
-        try {
-            if (Files.exists(oldArticlePath)) {
-                Files.delete(oldArticlePath);
-                Files.copy(newSource, newArticlePath, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("Artigo atualizado com sucesso.");
-            } else {
-                System.out.println("Artigo antigo não encontrado.");
-            }
-        } catch (IOException e) {
-            System.out.println("Erro ao atualizar artigo: " + e.getMessage());
-        }
-    }
+    private String name;
+    private String path;
 
     @Override
     public String getData(String dataToGet) {
-        return "";
+        switch (dataToGet) {
+            case "name":
+                return this.name;
+            case "path":
+                return this.path;
+            default:
+                return "";
+        }
     }
 
     @Override
     public void setData(String dataToSet, String data) {
-        // Implementar conforme necessário
+        switch (dataToSet) {
+            case "name":
+                this.name = data;
+                break;
+            case "path":
+                this.path = data;
+                break;
+        }
     }
 
     @Override
     public HashMap<String, Persistence> read() {
         return null;
+    }
+
+    public HashMap<String, Persistence> read(Object... params) {
+        HashMap<String, Persistence> articles = new HashMap<>();
+        if (params.length != 1) {
+            System.out.println("É necessário 1 parâmetro: nome do evento.");
+            return articles;
+        }
+
+        String eventName = (String) params[0];
+        String eventFolderPath = "C:\\Users\\deyvi\\even4\\db\\Articles\\" + eventName;
+
+        File eventFolder = new File(eventFolderPath);
+        if (!eventFolder.exists()) {
+            System.out.println("Pasta do evento não encontrada: " + eventFolderPath);
+            return articles;
+        }
+
+        File[] articleFiles = eventFolder.listFiles();
+        if (articleFiles != null) {
+            for (File articleFile : articleFiles) {
+                if (articleFile.isFile()) {
+                    SubmitArticle article = new SubmitArticle();
+                    article.setData("name", articleFile.getName());
+                    article.setData("path", articleFile.getAbsolutePath());
+                    articles.put(articleFile.getName(), article);
+                }
+            }
+        }
+        return articles;
     }
 
     @Override
@@ -113,7 +72,112 @@ public class SubmitArticle implements Persistence {
     }
 
     @Override
-    public void setName(String name) {
-        // Implementar conforme necessário
+    public void setName(String email) {
+
+    }
+
+    @Override
+    public void create(Object... params) {
+        if (params.length != 2) {
+            System.out.println("São necessários 2 parâmetros: nome do evento e caminho do arquivo.");
+            return;
+        }
+
+        String eventName = (String) params[0];
+        String filePath = (String) params[1];
+
+        String eventFolderPath = "C:\\Users\\deyvi\\even4\\db\\Articles\\" + eventName;
+        File eventFolder = new File(eventFolderPath);
+        File fileToMove = new File(filePath);
+
+        File destinationFile = new File(eventFolder, fileToMove.getName());
+        if (!eventFolder.exists()) {
+            if (eventFolder.mkdirs()) {
+                System.out.println("Pasta do evento criada com sucesso: " + eventFolderPath);
+            } else {
+                System.out.println("Erro ao criar a pasta do evento: " + eventFolderPath);
+                return;
+            }
+        }
+        if (!fileToMove.exists()) {
+            System.out.println("Arquivo a ser movido não existe: " + filePath);
+            return;
+        }
+
+        try {
+            if (fileToMove.renameTo(destinationFile)) {
+                System.out.println("Arquivo movido com sucesso para: " + destinationFile.getAbsolutePath());
+            } else {
+                System.out.println("Erro ao mover o arquivo.");
+            }
+        } catch (Exception e) {
+            System.out.println("Erro ao mover o arquivo: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void update(Object... params) {
+        if (params.length != 2) {
+            System.out.println("São necessários 2 parâmetros: nome do artigo e caminho do novo arquivo.");
+            return;
+        }
+
+        String articleName = (String) params[0];
+        String newFilePath = (String) params[1];
+
+        File newFile = new File(newFilePath);
+        if (!newFile.exists()) {
+            System.out.println("Novo arquivo não existe: " + newFilePath);
+            return;
+        }
+
+        File directory = new File("C:\\Users\\deyvi\\even4\\db\\Articles");
+
+        File[] eventFolders = directory.listFiles(File::isDirectory);
+        if (eventFolders != null) {
+            for (File eventFolder : eventFolders) {
+                File oldFile = new File(eventFolder, articleName);
+                if (oldFile.exists()) {
+                    oldFile.delete();
+                    File destinationFile = new File(eventFolder, newFile.getName());
+                    if (newFile.renameTo(destinationFile)) {
+                        System.out.println("Arquivo atualizado com sucesso para: " + destinationFile.getAbsolutePath());
+                    } else {
+                        System.out.println("Erro ao atualizar o arquivo.");
+                    }
+                    return;
+                }
+            }
+        }
+
+        System.out.println("Arquivo não encontrado.");
+    }
+
+    @Override
+    public void delete(Object... params) {
+        if (params.length != 1) {
+            System.out.println("São necessários 1 parâmetro: nome do arquivo.");
+            return;
+        }
+
+        String fileName = (String) params[0];
+        File directory = new File("C:\\Users\\deyvi\\even4\\db\\Articles");
+
+        File[] eventFolders = directory.listFiles(File::isDirectory);
+        if (eventFolders != null) {
+            for (File eventFolder : eventFolders) {
+                File fileToDelete = new File(eventFolder, fileName);
+                if (fileToDelete.exists()) {
+                    if (fileToDelete.delete()) {
+                        System.out.println("Arquivo deletado com sucesso.");
+                    } else {
+                        System.out.println("Erro ao deletar o arquivo.");
+                    }
+                    return;
+                }
+            }
+        }
+
+        System.out.println("Arquivo não encontrado.");
     }
 }

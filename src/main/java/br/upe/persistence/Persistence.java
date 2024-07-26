@@ -14,4 +14,5 @@ public interface  Persistence {
     String getData(String dataToGet);
     void setData(String dataToSet, String data);
     HashMap<String, Persistence> read();
+    HashMap<String, Persistence> read(Object... params);
 }
