@@ -274,6 +274,27 @@ public class Interface {
         enterEvent(sc, ses, sessionId, userLogin, ac);
     }
 
+    private static void enterEvent(Scanner sc, Controller ses, String sessionId, Controller userLogin, Controller ac) throws FileNotFoundException {
+        ses.show(sessionId, "sessionId");
+        int option;
+        do {
+            System.out.println("[1] - Entrar na Sessão");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+            switch (option) {
+                case 1:
+                    System.out.println("Digite seu nome para a emissão do certificado");
+                    String name = sc.nextLine();
+                    ac.create(name, sessionId, userLogin.getData("id"));
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+            }
+        }while (option != 0);
+
+    }
+
     private static void articleMenu(Scanner sc, SubmitArticleController submitArticleController) throws FileNotFoundException {
         int option;
 
