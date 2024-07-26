@@ -53,11 +53,11 @@ public class AttendeeController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
         for (Map.Entry<String, Persistence> entry : eventHashMap.entrySet()) {
             Persistence persistence = entry.getValue();
             if (!persistence.getData("ownerId").equals(id)){
-                System.out.println(persistence.getData("name") + " - " + persistence.getData("id"));
+                System.out.println(persistence.getData("name") + " - " + persistence.getData(params[0]));
             }
         }
     }
