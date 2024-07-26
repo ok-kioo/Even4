@@ -1,8 +1,10 @@
 package br.upe.ui;
 
 import br.upe.controller.*;
+import br.upe.persistence.SubmitArticle;
 
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
 import java.util.Scanner;
 
 import static br.upe.ui.Validation.*;
@@ -72,6 +74,8 @@ public class Interface {
             Controller ec = new EventController();
             Controller sec = new SubEventController();
             Controller ses = new SessionController();
+            Controller ac = new AttendeeController();
+            Controller sub = new SubmitArticleController();
 
             switch (option) {
                 case 1:
@@ -81,7 +85,7 @@ public class Interface {
                     alterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
-                    enterFlow(sc, ec, sec, ses, userLogin);
+                    enterFlow(sc, ec, sec, sub, userLogin);
                     break;
                 case 4:
                     if (setup(sc, userLogin)) {
@@ -96,6 +100,11 @@ public class Interface {
             }
         } while (option != 0);
     }
+
+    private static void submitArticles(String articlePath, Controller sub) throws FileNotFoundException {
+        sub.create(articlePath);
+    }
+
 
     private static void printUserMenu() {
         System.out.println("[1] - Criar");
@@ -162,7 +171,7 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
+    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller sub, Controller userLogin) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha a opção desejada:");
@@ -177,10 +186,12 @@ public class Interface {
 
                     break;
                 case 2:
-                    EventInscription(sc, ec, sec, ses, userLogin);
+                    EventInscription(sc, ec, userLogin);
                     break;
                 case 3:
-
+                    System.out.println("Digite o caminho do artigo referido:");
+                    String filePath = sc.nextLine();
+                    submitArticles(filePath, sub);
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -191,32 +202,10 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void EventInscription(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
+    private static void EventInscription(Scanner sc, Controller ec, Controller userLogin) {
         ec.show(userLogin.getData("id"));
-        sec.show(userLogin.getData("id"));
         System.out.println("Digite o evento que você deseja entrar: ");
         String event = sc.nextLine();
-        enterEvent(sc, event, ses, userLogin);
-    }
-
-    private static void enterEvent(Scanner sc, String event, Controller ses, Controller userLogin) {
-        ses.show(userLogin.getData("id"), event);
-        int option;
-        do {
-            System.out.println("[1] - Entrar no evento");
-            System.out.println("[0] - Voltar");
-            option = getOption(sc);
-            switch (option) {
-                case 1:
-
-                    break;
-                case 0:
-                    System.out.println("Voltando...");
-                    break;
-            }
-        } while (option != 0);
-
-
     }
 
     private static void createEvent(Scanner sc, Controller ec, Controller userLogin) throws FileNotFoundException {
@@ -224,6 +213,7 @@ public class Interface {
         String nameEvent = sc.nextLine();
         System.out.println("Data do Evento: ");
         String dateEvent = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Descrição do Evento: ");
         String descriptionEvent = sc.nextLine();
         System.out.println("Local do Evento: ");
@@ -275,6 +265,7 @@ public class Interface {
         String newName = sc.nextLine();
         System.out.println("Nova Data do Evento: ");
         String newDate = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Nova Descrição do Evento: ");
         String newDescription = sc.nextLine();
         System.out.println("Novo Local do Evento: ");
@@ -295,6 +286,7 @@ public class Interface {
         String nameSubEvent = sc.nextLine();
         System.out.println("Data do SubEvento: ");
         String dateSubEvent = sc.nextLine();
+        Validation vl = new Validation();
         System.out.println("Descrição do SubEvento: ");
         String descriptionSubEvent = sc.nextLine();
         System.out.println("Local do SubEvento: ");
@@ -433,6 +425,57 @@ public class Interface {
         System.out.println("[0] - Voltar");
         System.out.print("Escolha uma opção: ");
     }
+
+    private static void createAttendee(Scanner sc, Controller ac, Controller sec, Controller userLogin) throws FileNotFoundException {
+        boolean isNull = ac.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
+        System.out.println("Nome completo: ");
+        String nameAttendee = sc.nextLine();
+        if (isValidDate(nameAttendee)){
+            sec.create(nameAttendee.trim(), nameAttendee);
+        }
+    }
+
+    private static void alterAttendee(Scanner sc, Controller sec, Controller userLogin) throws FileNotFoundException {
+        boolean isNull = sec.list(userLogin.getData("id"));
+        if (isNull) {
+            return;
+        }
+        int optionSubEvent;
+        do {
+            System.out.println("Selecione um SubEvento: ");
+            String subChanged = sc.nextLine();
+            printAlterSubEventMenu();
+
+            optionSubEvent = getOption(sc);
+            switch (optionSubEvent) {
+                case 1:
+                    sec.delete(subChanged, "name", userLogin.getData("id"));
+                    optionSubEvent = 0;
+                    break;
+                case 2:
+                    updateSubEvent(sc, sec, subChanged, userLogin.getData("id"));
+                    optionSubEvent = 0;
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+            }
+        } while (optionSubEvent != 0);
+    }
+
+    private static void updateAttendee(Scanner sc, Controller ac, String attNameChanged, String userId) throws FileNotFoundException {
+        System.out.println("Digite o novo nome do participante: ");
+        String newName = sc.nextLine();
+        if (isValidDate(newName)){
+            ac.update(attNameChanged.trim(), newName.trim(), newName);
+        }
+    }
+
 
     public static Object[] login(Scanner sc) {
         Controller userController = new UserController();

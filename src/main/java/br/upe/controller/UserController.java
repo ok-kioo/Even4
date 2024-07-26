@@ -43,6 +43,11 @@ public class UserController implements Controller {
     }
 
 
+    @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
     public void setUserLog(Persistence userLog) {
         this.userLog = userLog;
     }

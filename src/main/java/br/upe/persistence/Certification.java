@@ -78,7 +78,6 @@ public class Certification {
             case "eventName" -> data = this.getEventName();
             case "cpf" -> data = this.getCpf();
             case "location" -> data = this.getLocation();
-            case "id" -> data = String.valueOf(getId());
             case "date" -> data = String.valueOf(this.getDate());
             case "duration" -> data = this.getDuration();
             default -> throw new IllegalArgumentException("Data doesn't exist or is restricted");
@@ -86,11 +85,9 @@ public class Certification {
         return data;
     }
 
-    public void createCertification(String attendeeName, String eventName, String cpf, LocalDateTime date, String location, String duration) {
+    public void createCertification(String attendeeName, String sessionName, String cpf, LocalDateTime date, String location, String duration) {
         String line = "Certificamos que " + attendeeName +
-                " participou com êxito do evento " + eventName +
-                ", realizado em " + date + " na localidade de " + location +
-                ", contabilizando carga horária total de " + duration + " horas.";
+                " participou com êxito da sessão " + sessionName;
 
         File f = new File(String.format("./db/Certifications/%s.txt", attendeeName));
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(f, true))) {

@@ -3,6 +3,10 @@ package br.upe.persistence;
 import java.util.HashMap;
 
 public interface  Persistence {
+    String getName();
+
+    void setName(String email);
+
     void create(Object... params);
     void delete(Object... params);
     void update(Object... params);

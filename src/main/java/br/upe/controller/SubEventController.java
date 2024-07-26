@@ -53,6 +53,11 @@ public class SubEventController implements Controller {
 
 
     @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
+    @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
             System.out.println("Só pode ter 6 parâmetros");

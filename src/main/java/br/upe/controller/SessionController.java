@@ -53,6 +53,11 @@ public class SessionController implements Controller {
     }
 
     @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
+    @Override
     public void create(Object... params) {
         if (params.length != 8) {
             System.out.println("Número incorreto de parâmetros. Esperado: 8");
