@@ -18,7 +18,6 @@ public class Session implements Persistence {
     private String startTime;
     private String endTime;
     private String eventId;
-    private String subeventId;
     private String ownerId;
 
     @Override

@@ -44,7 +44,7 @@ public class SubmitArticle implements Persistence {
         }
 
         String eventName = (String) params[0];
-        String eventFolderPath = "C:\\Users\\deyvi\\even4\\db\\Articles\\" + eventName;
+        String eventFolderPath = ".\\even4\\db\\Articles\\" + eventName;
 
         File eventFolder = new File(eventFolderPath);
         if (!eventFolder.exists()) {
@@ -86,7 +86,7 @@ public class SubmitArticle implements Persistence {
         String eventName = (String) params[0];
         String filePath = (String) params[1];
 
-        String eventFolderPath = "C:\\Users\\deyvi\\even4\\db\\Articles\\" + eventName;
+        String eventFolderPath = ".\\even4\\db\\Articles\\" + eventName;
         File eventFolder = new File(eventFolderPath);
         File fileToMove = new File(filePath);
 
@@ -131,7 +131,7 @@ public class SubmitArticle implements Persistence {
             return;
         }
 
-        File directory = new File("C:\\Users\\deyvi\\even4\\db\\Articles");
+        File directory = new File(".\\even4\\db\\Articles");
 
         File[] eventFolders = directory.listFiles(File::isDirectory);
         if (eventFolders != null) {
@@ -161,7 +161,7 @@ public class SubmitArticle implements Persistence {
         }
 
         String fileName = (String) params[0];
-        File directory = new File("C:\\Users\\deyvi\\even4\\db\\Articles");
+        File directory = new File(".\\even4\\db\\Articles");
 
         File[] eventFolders = directory.listFiles(File::isDirectory);
         if (eventFolders != null) {

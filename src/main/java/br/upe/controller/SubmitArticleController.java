@@ -135,14 +135,9 @@ public class SubmitArticleController implements Controller {
         for (Map.Entry<String, Persistence> entry : list.entrySet()) {
             Persistence listindice = entry.getValue();
             if (listindice.getData("name").equals(eventName)) {
-                fatherId.setLength(0);
-                fatherId.append(listindice.getData("id"));
                 found = true;
                 break;
             }
-        }
-        if (!found) {
-            System.out.println("Evento pai não encontrado\n");
         }
         return found;
     }
