@@ -42,12 +42,12 @@ public class SessionController implements Controller {
 
     @Override
     public void create(Object... params) {
-        if (params.length != 8) {
-            System.out.println("Número incorreto de parâmetros. Esperado: 8");
+        if (params.length != 9) {
+            System.out.println("Número incorreto de parâmetros. Esperado: 9");
             return;
         }
 
-        String eventId = getFatherEventId((String) params[0]);
+        String eventId = getFatherEventId((String) params[0], (String) params[8]);
         String name = (String) params[1];
         String date = (String) params[2];
         String description = (String) params[3];
@@ -56,26 +56,32 @@ public class SessionController implements Controller {
         String endTime = (String) params[6];
         String userId = (String) params[7];
 
-        String eventOwnerId = getFatherOwnerId(eventId);
+        String eventOwnerId = getFatherOwnerId(eventId, (String) params[8]);
+        HashMap<String, Persistence> eventH;
 
-        EventController eventController = new EventController();
-        HashMap<String, Persistence> eventH = eventController.getEventHashMap();
+        if (params[8].equals("Event")){
+            EventController eventController = new EventController();
+            eventH = eventController.getEventHashMap();
+        } else{
+            SubEventController subEventController = new SubEventController();
+            eventH = subEventController.getEventHashMap();
+        }
 
         if (!eventOwnerId.equals(userId)) {
             System.out.println("Você não pode criar uma sessão para um evento que você não possui.");
             return;
         }
 
-        boolean nomeEmUso = false;
+        boolean inUseName = false;
         for (Map.Entry<String, Persistence> entry : this.sessionHashMap.entrySet()) {
             Persistence sessionIndice = entry.getValue();
             if (sessionIndice.getData("name").equals(name) || name.isEmpty()) {
-                nomeEmUso = true;
+                inUseName = true;
                 break;
                 }
             }
 
-        if (nomeEmUso || name.isEmpty()) {
+        if (inUseName || name.isEmpty()) {
             System.out.println("Nome vazio ou em uso");
             return;
         }
@@ -259,10 +265,17 @@ public class SessionController implements Controller {
         return false;
     }
 
-    private String getFatherEventId(String searchId) {
-        EventController ec = new EventController();
+    private String getFatherEventId(String searchId, String type) {
+        HashMap<String, Persistence> list;
+        if (type.equals("Event")){
+            EventController eventController = new EventController();
+            list = eventController.getEventHashMap();
+        } else{
+            SubEventController subEventController = new SubEventController();
+            list = subEventController.getEventHashMap();
+        }
+
         String fatherId = "";
-        HashMap<String, Persistence> list = ec.getEventHashMap();
         boolean found = false;
         for (Map.Entry<String, Persistence> entry : list.entrySet()) {
             Persistence listIndice = entry.getValue();
@@ -279,10 +292,17 @@ public class SessionController implements Controller {
         return fatherId;
     }
 
-    private String getFatherOwnerId(String eventId) {
-        EventController ec = new EventController();
+    private String getFatherOwnerId(String eventId, String type) {
+        HashMap<String, Persistence> list;
+        if (type.equals("Event")){
+            EventController eventController = new EventController();
+            list = eventController.getEventHashMap();
+        } else{
+            SubEventController subEventController = new SubEventController();
+            list = subEventController.getEventHashMap();
+        }
+
         String fatherOwnerId = "";
-        HashMap<String, Persistence> list = ec.getEventHashMap();
         for (Map.Entry<String, Persistence> entry : list.entrySet()) {
             Persistence listIndice = entry.getValue();
             if (listIndice.getData("id").equals(eventId)) {

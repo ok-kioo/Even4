@@ -431,10 +431,44 @@ public class Interface {
     }
 
     private static void createSession(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) throws FileNotFoundException {
-        boolean isNull = ec.list(userLogin.getData("id"));
-        if (isNull) {
-            return;
-        }
+        int optionSession;
+        String type;
+        do {
+            System.out.println("[1] - Criar Sessão em um Evento");
+            System.out.println("[2] - Criar Sessão em um SubEvento");
+            System.out.println("[0] - Voltar");
+            optionSession = getOption(sc);
+
+            switch (optionSession){
+                case 1:
+                    type = "Event";
+                    System.out.println("Evento: ");
+                    boolean isNull = ec.list(userLogin.getData("id"));
+                    enterMenuSession(sc, ses, type, userLogin);
+                    if (isNull) {
+                        return;
+                    }
+                    break;
+                case 2:
+                    type = "SubEvent";
+                    System.out.println("\nSubEvento: ");
+                    boolean isNullSub = sec.list(userLogin.getData("id"));
+                    enterMenuSession(sc, ses, type, userLogin);
+                    if (isNullSub) {
+                        return;
+                    }
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                }
+        } while (optionSession != 0);
+    }
+
+    private static void enterMenuSession(Scanner sc, Controller ses, String type, Controller userLogin) throws FileNotFoundException {
+        System.out.println();
         System.out.println("Nome do Evento Pai: ");
         String fatherEvent = sc.nextLine();
         System.out.println("Digite o nome da Sessão: ");
@@ -450,7 +484,7 @@ public class Interface {
         System.out.println("Término da Sessão: ");
         String endTime = sc.nextLine();
         if (isValidDate(dateSession) && areValidTimes(startTime, endTime)){
-            ses.create(fatherEvent.trim(), nameSession.trim(), dateSession, descriptionSession, locationSession, startTime, endTime, userLogin.getData("id"));
+            ses.create(fatherEvent.trim(), nameSession.trim(), dateSession, descriptionSession, locationSession, startTime, endTime, userLogin.getData("id"), type);
         }
     }
 
