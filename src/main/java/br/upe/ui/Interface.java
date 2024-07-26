@@ -85,7 +85,7 @@ public class Interface {
                     alterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
-                    enterFlow(sc, ec, sec, sub, userLogin);
+                    enterFlow(sc, sub, ses, userLogin, ac);
                     break;
                 case 4:
                     if (setup(sc, userLogin)) {
