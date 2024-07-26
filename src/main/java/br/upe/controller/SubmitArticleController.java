@@ -60,7 +60,7 @@ public class SubmitArticleController implements Controller {
     }
 
     @Override
-    public void show(String id) {
+    public void show(Object... params) {
         // Implementar conforme necessário
     }
 
