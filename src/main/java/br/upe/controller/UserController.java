@@ -28,10 +28,7 @@ public class UserController implements Controller {
         String data = "";
         try {
             switch (dataToGet) {
-                case "email" -> {
-                    System.out.println();
-                    data = this.userLog.getData("email");
-                }
+                case "email" -> data = this.userLog.getData("email");
                 case "cpf" -> data = this.userLog.getData("cpf");
                 case "id" -> data = this.userLog.getData("id");
                 default -> throw new IOException();
@@ -42,6 +39,11 @@ public class UserController implements Controller {
         return data;
     }
 
+
+    @Override
+    public void SubmitArticleController(String string) {
+
+    }
 
     public void setUserLog(Persistence userLog) {
         this.userLog = userLog;

@@ -59,6 +59,7 @@ public class EventController implements Controller {
         return isnull;
     }
 
+    @Override
     public void show(Object... params) {
         this.setEventHashMap(eventHashMap);
 
@@ -157,10 +158,26 @@ public class EventController implements Controller {
 
     @Override
     public String getData(String dataToGet) {
-        return null;
+        String data = "";
+        try {
+            switch (dataToGet) {
+                case "id" -> data = this.EventLog.getData("id");
+                case "name" -> data = this.EventLog.getData("name");
+                case "description" -> data = this.EventLog.getData("description");
+                case "date" -> data = String.valueOf(this.EventLog.getData("date"));
+                case "location" -> data = this.EventLog.getData("location");
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Informação não existe ou é restrita");
+        }
+        return data;
     }
 
+    @Override
+    public void SubmitArticleController(String string) {
 
+    }
 
     @Override
     public void create(Object... params) {

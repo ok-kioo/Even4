@@ -73,6 +73,16 @@ public class User implements Persistence {
         this.email = email;
     }
 
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public void setName(String email) {
+
+    }
+
     public void create(Object... params) {
 
         if (params.length < 2) {

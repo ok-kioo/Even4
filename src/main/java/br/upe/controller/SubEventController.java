@@ -53,6 +53,11 @@ public class SubEventController implements Controller {
 
 
     @Override
+    public void SubmitArticleController(String string) {
+
+    }
+
+    @Override
     public void create(Object... params) throws FileNotFoundException {
         if (params.length != 6) {
             System.out.println("Só pode ter 6 parâmetros");
@@ -123,14 +128,14 @@ public class SubEventController implements Controller {
     }
 
     @Override
-    public boolean list(String ownerId) {
+    public boolean list(String idowner) {
         this.read();
         boolean isnull = true;
         try {
             boolean found = false;
             for (Map.Entry<String, Persistence> entry : subEventHashMap.entrySet()) {
                 Persistence persistence = entry.getValue();
-                if (persistence.getData("ownerId").equals(ownerId)){
+                if (persistence.getData("ownerId").equals(idowner)){
                     System.out.println(persistence.getData("name"));
                     found = true;
                     isnull = false;
@@ -196,7 +201,7 @@ public class SubEventController implements Controller {
                 }
             }
 
-            if (nameExists) {
+            if (nameExists || newName.isEmpty()) {
                 System.out.println("Nome em uso ou vazio");
                 return;
             }

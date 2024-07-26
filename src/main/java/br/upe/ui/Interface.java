@@ -72,6 +72,8 @@ public class Interface {
             Controller ec = new EventController();
             Controller sec = new SubEventController();
             Controller ses = new SessionController();
+            Controller sub = new SubmitArticleController();
+            Controller ac = new AttendeeController();
 
             switch (option) {
                 case 1:
@@ -81,7 +83,7 @@ public class Interface {
                     alterFlow(sc, ec, sec, ses, userLogin);
                     break;
                 case 3:
-                    enterFlow(sc, ec, sec, ses, userLogin);
+                    enterFlow(sc, sub, ses, userLogin, ac);
                     break;
                 case 4:
                     if (setup(sc, userLogin)) {
@@ -96,6 +98,11 @@ public class Interface {
             }
         } while (option != 0);
     }
+
+    private static void submitArticles(String articlePath, Controller sub) throws FileNotFoundException {
+        sub.create(articlePath);
+    }
+
 
     private static void printUserMenu() {
         System.out.println("[1] - Criar");
@@ -162,7 +169,7 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void enterFlow(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
+    private static void enterFlow(Scanner sc, Controller sub, Controller ses, Controller userLogin, Controller ac) throws FileNotFoundException {
         int option;
         do {
             System.out.println("Escolha a opção desejada:");
@@ -174,13 +181,15 @@ public class Interface {
 
             switch (option) {
                 case 1:
-
+                    listEvents(sc, ses, userLogin, ac);
                     break;
                 case 2:
-                    EventInscription(sc, ec, sec, ses, userLogin);
+                    choiceEvent(sc, ses, userLogin, ac);
                     break;
                 case 3:
-
+                    System.out.println("Digite o caminho do artigo referido:");
+                    String filePath = sc.nextLine();
+                    submitArticles(filePath, sub);
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -191,24 +200,23 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void EventInscription(Scanner sc, Controller ec, Controller sec, Controller ses, Controller userLogin) {
-        ec.show(userLogin.getData("id"));
-        sec.show(userLogin.getData("id"));
-        System.out.println("Digite o evento que você deseja entrar: ");
-        String event = sc.nextLine();
-        enterEvent(sc, event, ses, userLogin);
-    }
-
-    private static void enterEvent(Scanner sc, String event, Controller ses, Controller userLogin) {
-        ses.show(userLogin.getData("id"), event);
+    private static void listEvents(Scanner sc, Controller ses, Controller userLogin, Controller ac) throws FileNotFoundException {
+        boolean isnull = ac.list(userLogin.getData("id"));
+        if (isnull) {
+            return;
+        }
         int option;
         do {
-            System.out.println("[1] - Entrar no evento");
+            System.out.println("[1] - Atualizar Dados da Inscrição");
+            System.out.println("[2] - Remover Inscrição");
             System.out.println("[0] - Voltar");
             option = getOption(sc);
             switch (option) {
                 case 1:
-
+                    alterAttendee(sc, ac);
+                    break;
+                case 2:
+                    deleteAttendee(sc, ac, userLogin);
                     break;
                 case 0:
                     System.out.println("Voltando...");
@@ -216,6 +224,73 @@ public class Interface {
             }
         } while (option != 0);
 
+    }
+
+    private static void deleteAttendee(Scanner sc, Controller ac, Controller userLogin) {
+        int option;
+        do {
+            System.out.println("[1] - Deletar Inscrição");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+            switch (option) {
+                case 1:
+                    System.out.println("Digite o id da Sessão que você deseja sair");
+                    String sessionId = sc.nextLine();
+                    ac.delete(userLogin.getData("id"), "id", sessionId);
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+            }
+        }while (option != 0);
+    }
+
+    private static void alterAttendee(Scanner sc, Controller ac) throws FileNotFoundException {
+        int option;
+        do {
+            System.out.println("[1] - Alterar Nome");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+            switch (option) {
+                case 1:
+                    System.out.println("Digite o id da Sessão que você deseja atualizar o seu nome");
+                    String sessionId = sc.nextLine();
+                    System.out.println("Digite o novo nome");
+                    String name = sc.nextLine();
+                    ac.update(name, sessionId);
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+            }
+        }while (option != 0);
+    }
+
+    private static void choiceEvent(Scanner sc, Controller ses, Controller userLogin, Controller ac) throws FileNotFoundException {
+        ses.show(userLogin.getData("id"), "userId");
+        System.out.println("Digite o id da Sessão que você quer entrar:");
+        String sessionId = sc.nextLine();
+        enterEvent(sc, ses, sessionId, userLogin, ac);
+    }
+
+    private static void enterEvent(Scanner sc, Controller ses, String sessionId, Controller userLogin, Controller ac) throws FileNotFoundException {
+        ses.show(sessionId, "sessionId");
+        int option;
+        do {
+            System.out.println("[1] - Entrar na Sessão");
+            System.out.println("[0] - Voltar");
+            option = getOption(sc);
+            switch (option) {
+                case 1:
+                    System.out.println("Digite seu nome para a emissão do certificado");
+                    String name = sc.nextLine();
+                    ac.create(name, sessionId, userLogin.getData("id"));
+                    break;
+                case 0:
+                    System.out.println("Voltando...");
+                    break;
+            }
+        }while (option != 0);
 
     }
 

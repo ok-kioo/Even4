@@ -4,7 +4,6 @@ import br.upe.persistence.Persistence;
 import br.upe.persistence.User;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 
 public interface Controller {
     void create(Object... params) throws FileNotFoundException;
@@ -17,4 +16,5 @@ public interface Controller {
     String getData(String dataToGet);
 
 
+    void SubmitArticleController(String string);
 }
