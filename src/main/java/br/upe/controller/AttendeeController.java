@@ -78,6 +78,7 @@ public class AttendeeController implements Controller {
             System.out.println("Só pode ter 2 parametros");
             return;
         }
+        this.read();
         Persistence attendeePersistence = new Attendee();
         String newName = (String) params[0];
         String sessionId = (String) params[1];
