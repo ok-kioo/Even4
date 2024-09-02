@@ -15,14 +15,14 @@ public class Validation {
     }
 
     public static boolean isValidCPF(String cpf) {
-        String cpfRegex = "^(\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2})|(\\d{11})$";
+        String cpfRegex = "^((\\\\d{3}\\\\.\\\\d{3}\\\\.\\\\d{3}-\\\\d{2})|(\\\\d{11}))$";
         Pattern pattern = Pattern.compile(cpfRegex);
         Matcher matcher = pattern.matcher(cpf);
         return matcher.matches();
     }
 
     public static boolean isValidDate(String dt) {
-        String dateRegex = "^([0-2]\\d|3[01])/(0\\d|1[0-2])/\\d{4}$";
+        String dateRegex = "^((([0-2]\\\\d)|(3[01]))/((0\\\\d)|(1[0-2]))/\\\\d{4})$";
         Pattern pattern = Pattern.compile(dateRegex);
         Matcher matcher = pattern.matcher(dt);
 
@@ -79,7 +79,7 @@ public class Validation {
             }
             return true;
         }
-    System.out.println("Formato de hora inválido. Use o formato hh:mm.");
+    System.out.println("Formato de hora inválido. Use o formato hh:mm");
     return false;
     }
 }

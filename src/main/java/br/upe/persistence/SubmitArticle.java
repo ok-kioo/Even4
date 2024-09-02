@@ -138,14 +138,13 @@ public class SubmitArticle implements Persistence {
             for (File eventFolder : eventFolders) {
                 File oldFile = new File(eventFolder, articleName);
                 if (oldFile.exists()) {
-                    oldFile.delete();
-                    File destinationFile = new File(eventFolder, newFile.getName());
-                    if (newFile.renameTo(destinationFile)) {
-                        System.out.println("Arquivo atualizado com sucesso para: " + destinationFile.getAbsolutePath());
+                    boolean deleted = oldFile.delete();
+                    if (deleted) {
+                        System.out.println("Arquivo antigo deletado com sucesso: " + oldFile.getAbsolutePath());
                     } else {
-                        System.out.println("Erro ao atualizar o arquivo.");
+                        System.out.println("Erro ao deletar o arquivo: " + oldFile.getAbsolutePath());
+                        return;
                     }
-                    return;
                 }
             }
         }
