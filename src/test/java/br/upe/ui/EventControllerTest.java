@@ -26,7 +26,7 @@ public class EventControllerTest {
         mockEventMap = new HashMap<>();
 
         testEvent = new Event();
-        testEvent.create("Test Event", "2024/12/31", "Description", "Location", "owner-id");
+        testEvent.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         mockEventMap.put(testEvent.getId(), testEvent);
 
         eventController.setEventHashMap(mockEventMap);
@@ -39,12 +39,12 @@ public class EventControllerTest {
             e.printStackTrace();
         }
 
-        eventController.create("New Event", "2024-11-01", "New Description", "New Location", "owner-id");
+        eventController.create("New Event", "01/11/2024", "New Description", "New Location", "owner-id");
         eventController.read();
 
         HashMap<String, Persistence> eventMap = eventController.getEventHashMap();
         boolean eventExists = eventMap.values().stream().anyMatch(e -> e.getData("name").equals("New Event"));
-        assertTrue(eventExists, "O evento criado não foi encontrado no hashMap.");
+        assertTrue(eventExists, "O evento criado não foi encontrado.");
     }
 
     @Test
@@ -57,11 +57,11 @@ public class EventControllerTest {
 
     @Test
     public void testUpdateEvent() throws FileNotFoundException {
-        eventController.update("Test Event", "Updated Event", "2024-12-31", "Updated Description", "Updated Location", "owner-id");
+        eventController.update("Test Event", "Updated Event", "31/12/2024", "Updated Description", "Updated Location", "owner-id");
 
         Event updatedEvent = (Event) eventController.getEventHashMap().get(testEvent.getId());
         assertEquals("Updated Event", updatedEvent.getData("name"));
-        assertEquals("2024-12-31", updatedEvent.getData("date"));
+        assertEquals("31/12/2024", updatedEvent.getData("date"));
         assertEquals("Updated Description", updatedEvent.getData("description"));
         assertEquals("Updated Location", updatedEvent.getData("location"));
     }

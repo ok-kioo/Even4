@@ -21,14 +21,14 @@ public class SessionControllerTest {
 
     @Test
     public void testCreateSession() {
-        sessionController.create("Event1", "Session1", "2024-12-01", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        sessionController.create("Event1", "Session1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
         HashMap<String, Persistence> sessions = sessionController.getSessionHashMap();
         assertFalse(sessions.isEmpty(), "A sessão não foi criada corretamente.");
     }
 
     @Test
     public void testReadSessions() {
-        sessionController.create("Event1", "Session1", "2024-12-01", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        sessionController.create("Event1", "Session1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
         sessionController.read();
         HashMap<String, Persistence> sessions = sessionController.getSessionHashMap();
         assertFalse(sessions.isEmpty(), "As sessões não foram lidas corretamente.");
@@ -36,15 +36,15 @@ public class SessionControllerTest {
 
     @Test
     public void testUpdateSession() throws FileNotFoundException {
-        sessionController.create("Event1", "Session1", "2024-12-01", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        sessionController.create("Event1", "Session1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-        sessionController.update("Session1", "Updated Session1", "2024-12-02", "Updated Description", "Updated Location", "owner-id");
+        sessionController.update("Session1", "Updated Session1", "02/12/2024", "Updated Description", "Updated Location", "owner-id");
 
         boolean updated = false;
         for (Persistence session : sessionController.getSessionHashMap().values()) {
             if (session.getData("name").equals("Updated Session1")) {
                 updated = true;
-                assertEquals("2024-12-02", session.getData("date"));
+                assertEquals("02/12/2024", session.getData("date"));
                 assertEquals("Updated Description", session.getData("description"));
                 assertEquals("Updated Location", session.getData("location"));
                 break;
@@ -56,7 +56,7 @@ public class SessionControllerTest {
 
     @Test
     public void testDeleteSession() {
-        sessionController.create("Event1", "Session1", "2024-12-01", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        sessionController.create("Event1", "Session1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
         sessionController.delete("Session1", "name", "owner-id");
 
         HashMap<String, Persistence> sessions = sessionController.getSessionHashMap();

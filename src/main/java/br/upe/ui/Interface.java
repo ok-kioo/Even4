@@ -101,11 +101,6 @@ public class Interface {
         } while (option != 0);
     }
 
-    private static void submitArticles(String articlePath, Controller sub) throws FileNotFoundException {
-        sub.create(articlePath);
-    }
-
-
     private static void printUserMenu() {
         System.out.println("[1] - Criar");
         System.out.println("[2] - Alterar");
@@ -588,57 +583,6 @@ public class Interface {
         System.out.println("[0] - Voltar");
         System.out.print("Escolha uma opção: ");
     }
-
-    private static void createAttendee(Scanner sc, Controller ac, Controller sec, Controller userLogin) throws FileNotFoundException {
-        boolean isNull = ac.list(userLogin.getData("id"));
-        if (isNull) {
-            return;
-        }
-        System.out.println("Nome completo: ");
-        String nameAttendee = sc.nextLine();
-        if (isValidDate(nameAttendee)){
-            sec.create(nameAttendee.trim(), nameAttendee);
-        }
-    }
-
-    private static void alterAttendee(Scanner sc, Controller sec, Controller userLogin) throws FileNotFoundException {
-        boolean isNull = sec.list(userLogin.getData("id"));
-        if (isNull) {
-            return;
-        }
-        int optionSubEvent;
-        do {
-            System.out.println("Selecione um SubEvento: ");
-            String subChanged = sc.nextLine();
-            printAlterSubEventMenu();
-
-            optionSubEvent = getOption(sc);
-            switch (optionSubEvent) {
-                case 1:
-                    sec.delete(subChanged, "name", userLogin.getData("id"));
-                    optionSubEvent = 0;
-                    break;
-                case 2:
-                    updateSubEvent(sc, sec, subChanged, userLogin.getData("id"));
-                    optionSubEvent = 0;
-                    break;
-                case 0:
-                    System.out.println("Voltando...");
-                    break;
-                default:
-                    System.out.println("Opção inválida. Tente novamente.");
-            }
-        } while (optionSubEvent != 0);
-    }
-
-    private static void updateAttendee(Scanner sc, Controller ac, String attNameChanged, String userId) throws FileNotFoundException {
-        System.out.println("Digite o novo nome do participante: ");
-        String newName = sc.nextLine();
-        if (isValidDate(newName)){
-            ac.update(attNameChanged.trim(), newName.trim(), newName);
-        }
-    }
-
 
     public static Object[] login(Scanner sc) {
         Controller userController = new UserController();

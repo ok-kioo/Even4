@@ -32,7 +32,26 @@ public class SessionController implements Controller {
 
     @Override
     public String getData(String dataToGet) {
-        return "";
+        String data = "";
+        if (this.sessionLog == null) {
+            System.out.println("Sessão não inicializada.");
+            return "";
+        }
+        try {
+            switch (dataToGet) {
+                case "id" -> data = this.sessionLog.getData("id");
+                case "name" -> data = this.sessionLog.getData("name");
+                case "description" -> data = this.sessionLog.getData("description");
+                case "date" -> data = String.valueOf(this.sessionLog.getData("date"));
+                case "location" -> data = this.sessionLog.getData("location");
+                case "eventId" -> data = this.sessionLog.getData("eventId");
+                case "ownerId" -> data = this.sessionLog.getData("ownerId");
+                default -> throw new IOException();
+            }
+        } catch (IOException e) {
+            System.out.println("Informação não existe ou é restrita");
+        }
+        return data;
     }
 
     @Override
