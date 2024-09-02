@@ -82,7 +82,7 @@ public class AttendeeControllerTest {
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
         // Criar o participante
-        attendeeController.create("John", "353738", userController.getData("id"));
+        attendeeController.create("Jake", "353738", userController.getData("id"));
 
         // Atualizar o participante
         attendeeController.update("Jane", "353738");
