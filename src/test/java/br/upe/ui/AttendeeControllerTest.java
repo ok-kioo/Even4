@@ -1,8 +1,5 @@
 package br.upe.ui;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import br.upe.controller.AttendeeController;
 import br.upe.controller.EventController;
 import br.upe.controller.SessionController;
@@ -14,6 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AttendeeControllerTest {
 
@@ -30,19 +29,31 @@ public class AttendeeControllerTest {
         UserController userController = new UserController();
         EventController eventController = new EventController();
         SessionController sessionController = new SessionController();
+
+        // Cria o usuário
         userController.create("newuser@example.com", "09876543211");
+
+        // Verifica login e define userLog
         if (userController.loginValidate("newuser@example.com", "09876543211")) {
-            userController.setUserLog(userController.getUserHashMap().values().iterator().next());
+            Persistence loggedUser = userController.getUserHashMap().values().iterator().next();
+            userController.setUserLog(loggedUser);
+        } else {
+            fail("Login do usuário falhou, userLog não foi definido.");
         }
 
+        // Cria evento e sessão
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+
+        // Cria o participante
         attendeeController.create("John", "353738", userController.getData("id"));
 
+        // Verifica se o participante foi criado
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeExists = attendees.values().stream().anyMatch(a -> a.getData("name").equals("John"));
         assertTrue(attendeeExists, "O participante não foi criado corretamente.");
     }
+
 
 
     @Test
