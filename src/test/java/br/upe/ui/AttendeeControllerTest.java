@@ -16,45 +16,40 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AttendeeControllerTest {
 
+    private UserController userController;
+    private EventController eventController;
+    private SessionController sessionController;
     private AttendeeController attendeeController;
 
     @BeforeEach
     public void setUp() {
         attendeeController = new AttendeeController();
-
+        userController = new UserController();
+        eventController = new EventController();
+        sessionController = new SessionController();
     }
 
     @Test
     public void testCreateAttendee() throws FileNotFoundException {
-        UserController userController = new UserController();
-        EventController eventController = new EventController();
-        SessionController sessionController = new SessionController();
-
-        // Cria o usuário
         userController.create("newuser@example.com", "09876543211");
 
-        // Verifica login e define userLog
         if (userController.loginValidate("newuser@example.com", "09876543211")) {
-            Persistence loggedUser = userController.getUserHashMap().values().iterator().next();
-            userController.setUserLog(loggedUser);
+            userController.setUserLog(userController.getUserHashMap().values().iterator().next());
         } else {
-            fail("Login do usuário falhou, userLog não foi definido.");
+            fail("Login do usuário falhou.");
         }
 
-        // Cria evento e sessão
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-        // Cria o participante
-        attendeeController.create("John", "353738", userController.getData("id"));
+        attendeeController.delete(userController.getData("id"), "id", "353738");
+        attendeeController.create("Man", "353738", userController.getData("id"));
+        attendeeController.read();
 
-        // Verifica se o participante foi criado
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
-        boolean attendeeExists = attendees.values().stream().anyMatch(a -> a.getData("name").equals("John"));
+        boolean attendeeExists = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Man"));
         assertTrue(attendeeExists, "O participante não foi criado corretamente.");
     }
-
-
 
     @Test
     public void testReadAttendees() {
@@ -66,14 +61,8 @@ public class AttendeeControllerTest {
 
     @Test
     public void testUpdateAttendee() throws FileNotFoundException {
-        UserController userController = new UserController();
-        SessionController sessionController = new SessionController();
-        EventController eventController = new EventController();
-        AttendeeController attendeeController = new AttendeeController();  // Certifique-se de inicializar este controlador
-
         userController.create("newuser@example.com", "09876543211");
 
-        // Simular login e configurar userLog
         if (userController.loginValidate("newuser@example.com", "09876543211")) {
             userController.setUserLog(userController.getUserHashMap().values().iterator().next());
         }
@@ -81,28 +70,30 @@ public class AttendeeControllerTest {
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-        // Criar o participante
         attendeeController.create("Jake", "353738", userController.getData("id"));
 
-        // Atualizar o participante
         attendeeController.update("Jane", "353738");
 
-        // Verificar se o participante foi atualizado
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
         assertTrue(attendeeUpdated, "O participante não foi atualizado corretamente.");
     }
 
-
     @Test
     public void testDeleteAttendee() throws FileNotFoundException {
-        attendeeController.create("John Doe", "sessionId1", "userId1");
+        userController.create("newuser@example.com", "09876543211");
+
+        if (userController.loginValidate("newuser@example.com", "09876543211")) {
+            userController.setUserLog(userController.getUserHashMap().values().iterator().next());
+        }
+
+        attendeeController.create("James", "353738", userController.getData("id"));
         attendeeController.read();
 
-        attendeeController.delete("userId1", "id", "sessionId1");
+        attendeeController.delete(userController.getData("id"), "id", "353738");
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
-        boolean attendeeDeleted = attendees.values().stream().noneMatch(a -> a.getData("name").equals("John Doe"));
+        boolean attendeeDeleted = attendees.values().stream().noneMatch(a -> a.getData("name").equals("James"));
         assertTrue(attendeeDeleted, "O participante não foi deletado corretamente.");
     }
 }
