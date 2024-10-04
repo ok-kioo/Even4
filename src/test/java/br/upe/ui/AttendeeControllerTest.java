@@ -31,14 +31,7 @@ public class AttendeeControllerTest {
 
     @Test
     public void testCreateAttendee() throws FileNotFoundException {
-        userController.create("newuser@example.com", "09876543211");
-        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
-
-        eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
-        sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
-
-        attendeeController.delete(userController.getData("id"), "id", "353738");
-        attendeeController.create("Man", "353738", userController.getData("id"));
+        attendeeController.create("Man", "353738", "353730");
         attendeeController.read();
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
@@ -56,17 +49,9 @@ public class AttendeeControllerTest {
 
     @Test
     public void testUpdateAttendee() throws FileNotFoundException {
-        userController.create("newuser@example.com", "09876543211");
-
-        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
-
-        eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
-        sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
-
-
-        attendeeController.create("Jake", "353738", userController.getData("id"));
-
+        attendeeController.create("Man", "353738", "353730");
         attendeeController.update("Jane", "353738");
+        attendeeController.read();
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
@@ -81,10 +66,10 @@ public class AttendeeControllerTest {
             userController.setUserLog(userController.getUserHashMap().values().iterator().next());
         }
 
-        attendeeController.create("James", "353738", userController.getData("id"));
+        attendeeController.create("James", "353738", "353730");
         attendeeController.read();
 
-        attendeeController.delete(userController.getData("id"), "id", "353738");
+        attendeeController.delete("353730", "id", "353738");
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeDeleted = attendees.values().stream().noneMatch(a -> a.getData("name").equals("James"));
