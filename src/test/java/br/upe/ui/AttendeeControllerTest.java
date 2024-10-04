@@ -49,9 +49,18 @@ public class AttendeeControllerTest {
 
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
-        String sessionid = sessionController.getData("id");
 
-        attendeeController.create("Man", sessionid, userId);
+        String sessionId = null;
+        sessionController.read();
+        for (Map.Entry<String, Persistence> entry : sessionController.getSessionHashMap().entrySet()) {
+            Persistence session = entry.getValue();
+            if (session.getData("name").equals("Session Description")) {
+                sessionId = session.getData("id");
+                break;
+            }
+        }
+
+        attendeeController.create("Man", sessionId, userId);
         attendeeController.read();
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
@@ -87,7 +96,16 @@ public class AttendeeControllerTest {
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-        attendeeController.create("Man", "353738", userId);
+        String sessionId = null;
+        for (Map.Entry<String, Persistence> entry : sessionController.getSessionHashMap().entrySet()) {
+            Persistence session = entry.getValue();
+            if (session.getData("name").equals("SessionId1")) {
+                sessionId = session.getData("id");
+                break;
+            }
+        }
+
+        attendeeController.create("Man", sessionId, userId);
         attendeeController.update("Jane", "353738");
         attendeeController.read();
 
@@ -95,6 +113,7 @@ public class AttendeeControllerTest {
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
         assertTrue(attendeeUpdated, "O participante não foi atualizado corretamente.");
     }
+
 
     @Test
     public void testDeleteAttendee() throws FileNotFoundException {
