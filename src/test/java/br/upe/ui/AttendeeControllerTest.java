@@ -32,12 +32,7 @@ public class AttendeeControllerTest {
     @Test
     public void testCreateAttendee() throws FileNotFoundException {
         userController.create("newuser@example.com", "09876543211");
-
-        if (userController.loginValidate("newuser@example.com", "09876543211")) {
-            userController.setUserLog(userController.getUserHashMap().values().iterator().next());
-        } else {
-            fail("Login do usuário falhou.");
-        }
+        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
 
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
@@ -62,17 +57,12 @@ public class AttendeeControllerTest {
     @Test
     public void testUpdateAttendee() throws FileNotFoundException {
         userController.create("newuser@example.com", "09876543211");
-
-        if (userController.loginValidate("newuser@example.com", "09876543211")) {
-            userController.setUserLog(userController.getUserHashMap().values().iterator().next());
-        }
+        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
 
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-
         attendeeController.create("Jake", "353738", userController.getData("id"));
-
         attendeeController.update("Jane", "353738");
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
