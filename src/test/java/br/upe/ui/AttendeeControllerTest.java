@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,20 +32,33 @@ public class AttendeeControllerTest {
 
     @Test
     public void testCreateAttendee() throws FileNotFoundException {
-        userController.create("newuser@example.com", "09876543211");
-        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
+        String email = "newusr@example.com";
+        String cpf = "09876543211";
+        userController.create(email, cpf);
+
+        userController.read();
+        String userId = null;
+
+        for (Map.Entry<String, Persistence> entry : userController.getUserHashMap().entrySet()) {
+            Persistence user = entry.getValue();
+            if (user.getData("email").equals(email)) {
+                userId = user.getData("id");
+                break;
+            }
+        }
 
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        String sessionid = sessionController.getData("id");
 
-        attendeeController.delete(userController.getData("id"), "id", "353738");
-        attendeeController.create("Man", "353738", userController.getData("id"));
+        attendeeController.create("Man", sessionid, userId);
         attendeeController.read();
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeExists = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Man"));
         assertTrue(attendeeExists, "O participante não foi criado corretamente.");
     }
+
 
     @Test
     public void testReadAttendees() {
@@ -56,22 +70,33 @@ public class AttendeeControllerTest {
 
     @Test
     public void testUpdateAttendee() throws FileNotFoundException {
-        userController.create("newuser@example.com", "09876543211");
+        String email = "newuser@example.com";
+        String cpf = "09876543211";
+        userController.create(email, cpf);
 
-        userController.setUserLog(userController.getUserHashMap().values().iterator().next());
+        userController.read();
+        String userId = null;
+
+        for (Map.Entry<String, Persistence> entry : userController.getUserHashMap().entrySet()) {
+            Persistence user = entry.getValue();
+            if (user.getData("email").equals(email)) {
+                userId = user.getData("id");
+                break;
+            }
+        }
 
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
-
-        attendeeController.create("Jake", "353738", userController.getData("id"));
-
+        attendeeController.create("Man", "353738", userId);
         attendeeController.update("Jane", "353738");
+        attendeeController.read();
 
         HashMap<String, Persistence> attendees = attendeeController.getAttendeeHashMap();
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
         assertTrue(attendeeUpdated, "O participante não foi atualizado corretamente.");
     }
+
 
     @Test
     public void testDeleteAttendee() throws FileNotFoundException {
