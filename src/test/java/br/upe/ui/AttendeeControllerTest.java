@@ -70,6 +70,7 @@ public class AttendeeControllerTest {
         eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
         sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
+
         attendeeController.create("Jake", "353738", userController.getData("id"));
 
         attendeeController.update("Jane", "353738");
