@@ -47,14 +47,14 @@ public class AttendeeControllerTest {
             }
         }
 
-        eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
-        sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        eventController.create("TestEvent", "31/12/2024", "Description", "Location", "owner-id");
+        sessionController.create("TestEvent", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
         String sessionId = null;
         sessionController.read();
         for (Map.Entry<String, Persistence> entry : sessionController.getSessionHashMap().entrySet()) {
             Persistence session = entry.getValue();
-            if (session.getData("name").equals("Session Description")) {
+            if (session.getData("name").equals("SessionId1")) {
                 sessionId = session.getData("id");
                 break;
             }
@@ -93,8 +93,8 @@ public class AttendeeControllerTest {
             }
         }
 
-        eventController.create("Test Event", "31/12/2024", "Description", "Location", "owner-id");
-        sessionController.create("Test Event", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
+        eventController.create("TestEvent", "31/12/2024", "Description", "Location", "owner-id");
+        sessionController.create("TestEvent", "SessionId1", "01/12/2024", "Session Description", "Session Location", "08:00", "10:00", "owner-id", "Event");
 
         String sessionId = null;
         for (Map.Entry<String, Persistence> entry : sessionController.getSessionHashMap().entrySet()) {
@@ -113,7 +113,6 @@ public class AttendeeControllerTest {
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
         assertTrue(attendeeUpdated, "O participante não foi atualizado corretamente.");
     }
-
 
     @Test
     public void testDeleteAttendee() throws FileNotFoundException {
