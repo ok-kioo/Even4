@@ -59,7 +59,6 @@ public class AttendeeControllerTest {
         assertTrue(attendeeExists, "O participante não foi criado corretamente.");
     }
 
-
     @Test
     public void testReadAttendees() {
         attendeeController.read();
@@ -96,7 +95,6 @@ public class AttendeeControllerTest {
         boolean attendeeUpdated = attendees.values().stream().anyMatch(a -> a.getData("name").equals("Jane"));
         assertTrue(attendeeUpdated, "O participante não foi atualizado corretamente.");
     }
-
 
     @Test
     public void testDeleteAttendee() throws FileNotFoundException {
